@@ -1,0 +1,15 @@
+/*
+!/.gitignore
+!/README.md
+!/Configurations/
+!/Oralo/
+!/Oralo.xcodeproj/
+!/OraloUITests/
+!/Packages/
+
+DerivedData/
+.build/
+.swiftpm/
+xcuserdata/
+*.xcresult
+.asc/

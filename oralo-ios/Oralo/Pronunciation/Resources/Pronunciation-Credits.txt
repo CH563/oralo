@@ -1,0 +1,11 @@
+Oralo pronunciation references
+
+English (US): ipa-dict by dohliam (MIT)
+https://github.com/open-dict-data/ipa-dict
+Pinned revision: 972cd67dd5f96bc5660e28070cde26e3928abcd7
+Only data/en_US.txt is bundled, unchanged.
+
+Upstream credits: cmudict-ipa by lingz (MIT), based on CMU Pronouncing Dictionary (BSD), with stress markers using syllabify by Kyle Gorman. See accompanying license files.
+
+Chinese pinyin: Apple Foundation Mandarin-to-Latin transliteration, reviewed by the user.
+Listening: Apple system speech synthesis; a word example, not an IPA transcription service.

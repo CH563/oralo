@@ -1,0 +1,27 @@
+# Public source tree
+/*
+!/.gitignore
+!/LICENSE
+!/README.md
+!/oralo-ios/
+
+# Generated files and user settings
+.DS_Store
+.build/
+.swiftpm/
+DerivedData/
+xcuserdata/
+*.xcuserstate
+*.xcresult
+*.hmap
+*.ipa
+*.dSYM
+*.dSYM.zip
+
+# Local credentials and signing assets
+.env
+.env.*
+*.local.xcconfig
+*.p8
+*.p12
+*.mobileprovision

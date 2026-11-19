@@ -1,0 +1,62 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "welcome.continue" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Let’s get ready" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "准备我的演讲" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "準備我的演講" } }
+      }
+    },
+    "welcome.encouragement" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "You’ve got this." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "准备好，就开口。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "準備好，就開口。" } }
+      }
+    },
+    "welcome.features" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Follows your pace · Waits · Helps you pick up" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "语速跟随 · 停顿等待 · 轻松接稿" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "語速跟隨 · 停頓等待 · 輕鬆接稿" } }
+      }
+    },
+    "welcome.headline.first" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Speak freely." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "抬头，尽情讲。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "抬頭，盡情講。" } }
+      }
+    },
+    "welcome.headline.second" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "We’ll follow." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "低头，接着讲。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "低頭，接著講。" } }
+      }
+    },
+    "welcome.message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Your voice. Your pace. We’re with you." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "你专心表达，Oralo 跟着你的节奏。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "你專心表達，Oralo 跟著你的節奏。" } }
+      }
+    },
+    "welcome.subtitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "AI Teleprompter, at Your Pace" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "跟随你的 AI 提词器" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "跟隨你的 AI 提詞器" } }
+      }
+    }
+  },
+  "version" : "1.0"
+}
