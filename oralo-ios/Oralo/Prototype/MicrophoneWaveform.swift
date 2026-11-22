@@ -20,7 +20,7 @@ struct MicrophoneWaveform: View {
         .animation(reduceMotion ? nil : .linear(duration: 0.1), value: levels)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("Microphone input")
-        .accessibilityValue(isRecording ? ((levels.last ?? 0) > 0.2 ? "Sound detected" : "Quiet") : "Paused")
+        .accessibilityValue(AppCopy.text(isRecording ? ((levels.last ?? 0) > 0.2 ? "Sound detected" : "Quiet") : "Paused"))
         .accessibilityIdentifier("microphone-waveform")
     }
 

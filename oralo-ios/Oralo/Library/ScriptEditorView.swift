@@ -1,11 +1,21 @@
 import OraloCore
 import SwiftUI
 
-struct ScriptEditorView: View {
+struct ScriptEditorHost: View {
     @State private var editor: ScriptEditorModel
+    init(document: ScriptDocument, library: ScriptLibraryStore) {
+        _editor = State(initialValue: ScriptEditorModel(document: document, library: library))
+    }
+    var body: some View { ScriptEditorView(editor: editor) }
+}
+
+struct ScriptEditorView: View {
+    @Bindable var editor: ScriptEditorModel
+    var embedded = false
     @State private var section = Section.text
     @State private var originalVisible = false
     @State private var resetLayout = false
+    @State private var estimateVisible = false
     @State private var splitSegment: ScriptSegment?
     @State private var presentation: SessionPresentation?
     @State private var readiness: ReadinessRequest?
@@ -21,6 +31,8 @@ struct ScriptEditorView: View {
     @State private var readingPanel: ReadingPanel?
     @State private var reattaching: UUID?
     @State private var removedReading = false
+    @State private var pronunciationReview: PronunciationReviewRequest?
+    @State private var pendingPronunciationReview: PronunciationReviewRequest?
 
     private enum ReadingPanel: Identifiable {
         case list, edit(PronunciationRequest)
@@ -29,16 +41,25 @@ struct ScriptEditorView: View {
     private func t(_ zh: String, _ en: String) -> String { PronunciationCopy.text(zh, en) }
     private enum Section: String, CaseIterable { case text = "Text", sentences = "Sentences" }
 
-    init(document: ScriptDocument, library: ScriptLibraryStore) {
-        _editor = State(initialValue: ScriptEditorModel(document: document, library: library))
-    }
-
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             VStack(alignment: .leading, spacing: 12) {
                 TextField(t("讲稿标题", "Script title"), text: Binding(get: { editor.document.title }, set: { value in editor.change { $0.title = value } }))
                     .font(.largeTitle.bold()).accessibilityIdentifier("script-title")
                 saveStatus
+                Button { editingText = false; estimateVisible = true } label: { ScriptMetricsView(text: editor.document.text).frame(minHeight: 44, alignment: .leading) }
+                    .buttonStyle(.plain).accessibilityHint(t("调整预计时长的语速", "Adjust the pace used for this estimate"))
+                    .accessibilityIdentifier("edit-speaking-estimate")
+                if editor.document.layoutNeedsReview {
+                    HStack(alignment: .top) {
+                        Label(t("分句和停顿需要检查", "Check sentence breaks and pauses"), systemImage: "text.badge.checkmark")
+                        Spacer(minLength: 4)
+                        Button(section == .text ? t("查看", "Review") : t("已检查", "Checked")) {
+                            if section == .text { editingText = false; section = .sentences }
+                            else { editor.change { $0.confirmLayout() } }
+                        }.fixedSize().accessibilityIdentifier("check-sentence-layout")
+                    }.font(.footnote).foregroundStyle(OraloStyle.readingAccent)
+                }
                 if let reviewNotice {
                     Label(reviewNotice, systemImage: reviewFocus == nil ? "clock.arrow.circlepath" : "scope")
                         .font(.footnote).foregroundStyle(OraloStyle.readingAccent).accessibilityIdentifier("review-edit-location")
@@ -60,12 +81,15 @@ struct ScriptEditorView: View {
             if section == .text { textEditor }
             else { ScrollView { sentenceLayout.padding(24) } }
         }
+        .frame(maxWidth: 820)
+        .frame(maxWidth: .infinity)
         .disabled(preparing)
         .background(OraloStyle.canvas)
         .scrollDismissesKeyboard(.interactively)
         .navigationTitle(t("备稿", "Prepare")).navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
         .toolbar {
+            if !embedded {
             ToolbarItem(placement: .topBarLeading) {
                 Button("Scripts", systemImage: "chevron.left") {
                     editingText = false; preparing = true
@@ -75,14 +99,17 @@ struct ScriptEditorView: View {
                     }
                 }.accessibilityIdentifier("back-to-library").disabled(preparing)
             }
+            }
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
-                    Button(t("排练一次", "Rehearse"), systemImage: "play.circle") { start(.voice, kind: .rehearsal) }
+                    Button(t("排练一次", "Rehearse"), systemImage: "play.circle") { start(editor.library.preferences.value.followsVoice ? .voice : .manual, kind: .rehearsal) }
                         .accessibilityIdentifier("rehearse-script")
                     Button(t("讲稿记录", "Script records"), systemImage: "clock.arrow.circlepath") { editingText = false; historyVisible = true }
                         .accessibilityIdentifier("rehearsal-history")
                     Button(t("手动开讲", "Start manually"), systemImage: "hand.point.up.left") { start(.manual) }
                         .accessibilityIdentifier("start-manual")
+                    Button(t("小窗提词", "Floating prompt"), systemImage: "pip") { startFloating() }
+                        .accessibilityIdentifier("open-floating-prompt")
                     Button(t("保存", "Save")) { editingText = false; Task { _ = await editor.flush(finalizeOriginal: true) } }
                         .accessibilityIdentifier("save-script")
                     Button(t("撤销修改", "Undo"), systemImage: "arrow.uturn.backward") { editor.undo(); removedReading = false }
@@ -92,10 +119,13 @@ struct ScriptEditorView: View {
                     Button(section == .text ? t("分句排版", "Sentence layout") : t("返回正文", "Back to text")) {
                         editingText = false; section = section == .text ? .sentences : .text
                     }.accessibilityIdentifier("toggle-sentences")
+                    if editor.document.hasCustomLayout {
+                        Button(t("重新自动分句", "Rebuild sentence layout"), systemImage: "text.alignleft") { resetLayout = true }
+                    }
                     Menu(t("识别语言", "Speech language")) {
                         Picker(t("识别语言", "Speech language"), selection: Binding(get: { editor.document.localeID }, set: { value in editor.change { $0.localeID = value } })) {
-                            Text("中文 · Mandarin").tag("zh-CN")
-                            Text("English · US").tag("en-US")
+                            Text("Mandarin").tag("zh-CN")
+                            Text("English (US)").tag("en-US")
                         }
                     }
                     Button(t("查看原稿", "View original"), systemImage: "doc") { originalVisible = true }
@@ -109,7 +139,7 @@ struct ScriptEditorView: View {
                 Button("Done") { editingText = false }
             }
         }
-        .safeAreaInset(edge: .bottom) { startActions }
+        .safeAreaInset(edge: .bottom) { startActions.frame(maxWidth: 820).frame(maxWidth: .infinity) }
         .sheet(item: $readingPanel) { panel in
             switch panel {
             case .list: pronunciationList
@@ -145,19 +175,27 @@ struct ScriptEditorView: View {
                     pendingPresentation = try SessionPresentation(document: request.document, kind: request.kind, mode: mode,
                                                                   backend: backend, store: editor.library.rehearsals)
                     readiness = nil
-                } catch { editor.actionError = error.localizedDescription }
+                } catch { editor.actionError = AppCopy.error(error) }
             }
         }
-        .sheet(isPresented: $historyVisible, onDismiss: resumeRehearsalRequest) {
-            RehearsalHistoryView(store: editor.library.rehearsals, current: editor.document, edit: editReviewedPassage) {
-                rehearseAfterDismiss = true; historyVisible = false
-            }
-        }
+        .sheet(isPresented: historyBinding(pad: false), onDismiss: resumeRehearsalRequest) { history }
+        .fullScreenCover(isPresented: historyBinding(pad: true), onDismiss: resumeRehearsalRequest) { history }
         .fullScreenCover(item: $presentation, onDismiss: resumeRehearsalRequest) { request in
-            RehearsalFlowView(request: request, current: editor.document, edit: editReviewedPassage) {
+            RehearsalFlowView(request: request, current: editor.document, edit: editReviewedPassage, checkPronunciation: beginPronunciationReview) {
                 rehearseAfterDismiss = true; presentation = nil
             }
         }
+        .sheet(item: $pronunciationReview, onDismiss: resumeRehearsalRequest) { request in
+            PronunciationReviewView(editor: editor, request: request) {
+                rehearseAfterDismiss = true; pronunciationReview = nil
+            }
+        }
+        .sheet(isPresented: $estimateVisible) {
+            NavigationStack { SpeakingEstimateSettings().toolbar { ToolbarItem(placement: .confirmationAction) {
+                Button(t("完成", "Done")) { estimateVisible = false }
+            } } }
+        }
+        .onDisappear { Task { _ = await editor.flush(finalizeOriginal: true) } }
         .onChange(of: scenePhase) { _, phase in
             if phase != .active { Task { _ = await editor.flush() } }
         }
@@ -166,7 +204,7 @@ struct ScriptEditorView: View {
     private var saveStatus: some View {
         HStack(spacing: 6) {
             Image(systemName: editor.error != nil ? "exclamationmark.circle" : editor.saving ? "arrow.triangle.2.circlepath" : editor.dirty ? "circle.dotted" : "checkmark.circle")
-            Text(editor.error != nil ? t("未保存", "Not saved") : editor.saving ? t("保存中…", "Saving…") : editor.dirty ? t("等待保存…", "Waiting to save…") : t("已保存", "Saved on this iPhone"))
+            Text(editor.error != nil ? t("未保存", "Not saved") : editor.saving ? t("保存中…", "Saving…") : editor.dirty ? t("等待保存…", "Waiting to save…") : t("已保存", "Saved on this device"))
                 .accessibilityIdentifier("save-status")
             if !editor.document.pronunciations.isEmpty {
                 Button(t("· \(editor.document.pronunciations.count) 处读音", "· \(editor.document.pronunciations.count) readings")) {
@@ -184,14 +222,20 @@ struct ScriptEditorView: View {
         }.font(.caption).foregroundStyle(editor.error == nil ? Color.secondary : .orange)
     }
 
+    private func historyBinding(pad: Bool) -> Binding<Bool> {
+        Binding(get: { historyVisible && (UIDevice.current.userInterfaceIdiom == .pad) == pad },
+                set: { historyVisible = $0 })
+    }
+    private var history: some View {
+        RehearsalHistoryView(store: editor.library.rehearsals, current: editor.document, edit: editReviewedPassage, checkPronunciation: beginPronunciationReview) {
+            rehearseAfterDismiss = true; historyVisible = false
+        }
+    }
+
     private var textEditor: some View {
         VStack(alignment: .leading, spacing: 4) {
             PronunciationTextEditor(document: editor.document, editing: $editingText,
                                     change: editor.changeText, edit: editor.editText, selectReading: selectReading, focus: reviewFocus)
-            if editor.document.hasCustomLayout {
-                Button(t("编辑正文并重新分句", "Edit text & rebuild sentences"), systemImage: "pencil") { resetLayout = true }
-                    .padding(.horizontal, 24)
-            }
             Text(t("选中字词，点「读音」添加拼音或音标。", "Select a word, then choose Pronunciation to add a reading."))
                 .font(.footnote).foregroundStyle(.secondary).padding(.horizontal, 24).padding(.bottom, 4)
         }
@@ -210,7 +254,7 @@ struct ScriptEditorView: View {
                 .components(separatedBy: .whitespacesAndNewlines).filter { !$0.isEmpty }.joined(separator: " ")
             editingText = false
             readingPanel = .edit(PronunciationRequest(span: TextSpan(chosen), term: term, context: context, existing: existing))
-        } catch { editor.actionError = error.localizedDescription }
+        } catch { editor.actionError = AppCopy.error(error) }
     }
 
     private var pronunciationList: some View {
@@ -278,22 +322,38 @@ struct ScriptEditorView: View {
                         if segment.pauseAfter { Label("Pause", systemImage: "pause").font(.caption).foregroundStyle(Color.accentColor) }
                     }
                     Text(segment.text).font(.title3).textSelection(.enabled)
-                    HStack(spacing: 16) {
-                        Button("Split", systemImage: "scissors") { splitSegment = segment }
-                            .disabled(segment.text.count < 2).accessibilityIdentifier("split-\(index)")
-                        Button("Merge", systemImage: "arrow.down.to.line") { editor.change { $0.mergeWithNext(segment.id) } }
-                            .disabled(index + 1 == editor.document.segments.count).accessibilityIdentifier("merge-\(index)")
-                        Button(segment.pauseAfter ? "Unmark" : "Pause", systemImage: "pause") {
-                            editor.change { $0.togglePause(segment.id) }
-                        }.accessibilityIdentifier("pause-mark-\(index)")
-                    }.font(.callout).buttonStyle(.borderless).frame(minHeight: 44)
+                    ViewThatFits(in: .horizontal) {
+                        HStack(spacing: 16) { sentenceActions(segment, at: index) }
+                        VStack(alignment: .leading, spacing: 4) { sentenceActions(segment, at: index) }
+                    }.font(.callout).buttonStyle(.borderless)
                 }.padding(18).background(Color(uiColor: .secondarySystemGroupedBackground), in: .rect(cornerRadius: 18))
             }
         }
     }
 
+    @ViewBuilder private func sentenceActions(_ segment: ScriptSegment, at index: Int) -> some View {
+        // Measure complete labels before choosing a row. Larger text and longer
+        // translations move the actions into a column instead of squeezing words.
+        sentenceAction("Split", symbol: "scissors") { splitSegment = segment }
+            .disabled(segment.text.count < 2).accessibilityIdentifier("split-\(index)")
+        sentenceAction("Merge", symbol: "arrow.down.to.line") { editor.change { $0.mergeWithNext(segment.id) } }
+            .disabled(index + 1 == editor.document.segments.count).accessibilityIdentifier("merge-\(index)")
+        sentenceAction(segment.pauseAfter ? "Unmark" : "Pause", symbol: "pause") {
+            editor.change { $0.togglePause(segment.id) }
+        }
+        .accessibilityIdentifier("pause-mark-\(index)")
+    }
+
+    private func sentenceAction(_ title: LocalizedStringKey, symbol: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Label(title, systemImage: symbol)
+                .fixedSize(horizontal: true, vertical: true)
+                .frame(minWidth: 44, minHeight: 44).contentShape(.rect)
+        }
+    }
+
     private var startActions: some View {
-        Button { start(.voice) } label: {
+        Button { start(editor.library.preferences.value.followsVoice ? .voice : .manual) } label: {
             Label(preparing ? t("保存中…", "Saving…") : t("开讲", "Start speaking"), systemImage: "arrow.up.right")
                 .font(.headline).frame(maxWidth: .infinity, minHeight: 50)
         }
@@ -302,7 +362,19 @@ struct ScriptEditorView: View {
         .padding(.horizontal, 24).padding(.vertical, 10).disabled(preparing)
     }
 
+    private func startFloating() {
+        editingText = false; preparing = true
+        Task {
+            defer { preparing = false }
+            guard await editor.flush(finalizeOriginal: true),
+                  let saved = editor.library.documents.first(where: { $0.id == editor.document.id }),
+                  !saved.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+            editor.library.openFloating(saved)
+        }
+    }
+
     private func start(_ mode: SpeechPrototypeView.StartMode, kind: RehearsalRecord.Kind = .presentation) {
+        editor.library.floating.end()
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         editingText = false; preparing = true
         Task {
@@ -314,14 +386,24 @@ struct ScriptEditorView: View {
                 }
                 _ = try saved.snapshot()
                 readiness = ReadinessRequest(document: saved, kind: kind, manual: mode == .manual)
-            } catch { editor.actionError = error.localizedDescription }
+            } catch { editor.actionError = AppCopy.error(error) }
         }
     }
 
+    private func beginPronunciationReview(_ cueID: UUID, snapshot: RehearsalSnapshot, recordID: UUID) {
+        editingText = false
+        pendingPronunciationReview = PronunciationReviewRequest(cueID: cueID, snapshot: snapshot, recordID: recordID)
+        presentation = nil; historyVisible = false
+    }
+
     private func resumeRehearsalRequest() {
+        if let pendingPronunciationReview {
+            pronunciationReview = pendingPronunciationReview; self.pendingPronunciationReview = nil
+            return
+        }
         guard rehearseAfterDismiss else { return }
         rehearseAfterDismiss = false
-        start(.voice, kind: .rehearsal)
+        start(editor.library.preferences.value.followsVoice ? .voice : .manual, kind: .rehearsal)
     }
 
     private func editReviewedPassage(_ cueID: UUID?, snapshot: RehearsalSnapshot) {
@@ -340,7 +422,7 @@ struct ScriptEditorView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
-                    Text(editor.document.originalText == nil ? "The original will be kept when you save or leave this draft." : "Kept separately from your speaking version.")
+                    Text(AppCopy.text(editor.document.originalText == nil ? "The original will be kept when you save or leave this draft." : "Kept separately from your speaking version."))
                         .font(.footnote).foregroundStyle(.secondary)
                     Text(editor.document.originalText ?? editor.document.text).font(.body).textSelection(.enabled)
                 }.frame(maxWidth: .infinity, alignment: .leading).padding(24)

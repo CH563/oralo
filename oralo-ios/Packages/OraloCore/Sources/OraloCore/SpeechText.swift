@@ -8,7 +8,16 @@ enum SpeechText {
 
     static func tokenize(_ text: String) -> [CueMatcher.TextToken] {
         let original = Array(text)
-        let chars = original.map { String($0).folding(options: [.caseInsensitive, .widthInsensitive], locale: Locale(identifier: "en_US_POSIX")) }
+        // Mandarin recognition may return Simplified text for a Traditional script.
+        // Canonicalize matching only; retain the original grapheme coordinates used
+        // by highlighting. If a transform changes length, do not guess an alignment.
+        let matching: [Character]
+        if text.unicodeScalars.contains(where: isHan),
+           let simplified = text.applyingTransform(StringTransform("Hant-Hans"), reverse: false),
+           simplified.count == original.count {
+            matching = Array(simplified)
+        } else { matching = original }
+        let chars = matching.map { String($0).folding(options: [.caseInsensitive, .widthInsensitive], locale: Locale(identifier: "en_US_POSIX")) }
         var result: [CueMatcher.TextToken] = []
         var index = 0
         while index < chars.count {

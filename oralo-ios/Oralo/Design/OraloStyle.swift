@@ -26,19 +26,21 @@ struct OraloAction: View {
     let symbol: String
     var prominent = false
     var compact = false
+    var horizontal = false
     let action: () -> Void
     @Environment(\.accessibilityReduceTransparency) private var reduced
 
     private var button: some View {
         Button(action: action) {
-            VStack(spacing: 5) {
+            let layout = horizontal ? AnyLayout(HStackLayout(spacing: 7)) : AnyLayout(VStackLayout(spacing: 5))
+            layout {
                 Image(systemName: symbol).font(.title3.weight(.medium))
-                if !compact { Text(title).font(.caption.weight(.medium)).lineLimit(1).minimumScaleFactor(0.8) }
+                if !compact { Text(AppCopy.text(title)).font(horizontal ? .callout.weight(.medium) : .caption.weight(.medium)).lineLimit(1).minimumScaleFactor(0.8) }
             }
             .foregroundStyle(prominent ? Color.white : Color.primary)
-            .frame(maxWidth: compact ? 44 : .infinity, minHeight: compact ? 44 : 56)
+            .frame(maxWidth: compact ? 44 : .infinity, minHeight: compact || horizontal ? 44 : 56)
             .contentShape(.capsule)
-        }.accessibilityLabel(title)
+        }.accessibilityLabel(AppCopy.text(title))
     }
 
     @ViewBuilder var body: some View {

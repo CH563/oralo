@@ -21,7 +21,7 @@ public struct RehearsalSnapshot: Codable, Equatable, Identifiable, Sendable {
 }
 
 public struct RehearsalEvent: Codable, Equatable, Identifiable, Sendable {
-    public enum Kind: String, Codable, Sendable { case previous, next, selection, hold, interruption, manualMode }
+    public enum Kind: String, Codable, Sendable { case previous, next, selection, hold, interruption, manualMode, silence, reread }
     public let id: UUID
     public let kind: Kind
     public let cueID: UUID
@@ -32,6 +32,7 @@ public struct RehearsalEvent: Codable, Equatable, Identifiable, Sendable {
         self.activeOffset = activeOffset; self.duration = duration
     }
     public var isManualCue: Bool { [.previous, .next, .selection].contains(kind) }
+    public var isReviewable: Bool { isManualCue || [.hold, .silence, .reread].contains(kind) }
 }
 
 public struct RehearsalRecord: Codable, Equatable, Identifiable, Sendable {
@@ -53,6 +54,7 @@ public struct RehearsalRecord: Codable, Equatable, Identifiable, Sendable {
     public internal(set) var currentCueID: UUID
     public internal(set) var events: [RehearsalEvent] = []
     public internal(set) var sequence: UInt64 = 0
+    public internal(set) var pronunciationReviews: [PronunciationReview]?
     public var manualCount: Int { events.filter(\.isManualCue).count }
     public var holdCount: Int { events.filter { $0.kind == .hold }.count }
     public var isFinished: Bool { status == .completed || status == .unfinished }
@@ -126,6 +128,14 @@ public struct RehearsalTimeline: Sendable {
     public mutating func switchToManual(date: Date, uptime: TimeInterval) {
         guard !record.isFinished else { return }
         checkpoint(date: date, uptime: uptime); closeHold(); append(.manualMode, cueID: record.currentCueID)
+    }
+    public mutating func appendObservation(_ finding: RehearsalObservations.Finding, date: Date, uptime: TimeInterval) {
+        guard record.status == .running, [.silence, .reread].contains(finding.kind),
+              finding.offset.isFinite, finding.duration.isFinite, finding.duration >= 0 else { return }
+        checkpoint(date: date, uptime: uptime)
+        record.usedVoice = true
+        record.events.append(RehearsalEvent(kind: finding.kind, cueID: finding.cueID,
+            activeOffset: min(record.activeDuration, max(0, finding.offset)), duration: finding.duration))
     }
     public mutating func finish(completed: Bool, date: Date, uptime: TimeInterval) {
         guard !record.isFinished else { return }

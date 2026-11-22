@@ -3,7 +3,21 @@
 !/.gitignore
 !/LICENSE
 !/README.md
+!/README.zh-CN.md
 !/oralo-ios/
+
+# Public documentation and optimized images
+!/docs/
+/docs/*
+!/docs/TECHNICAL.md
+!/docs/TECHNICAL.zh-CN.md
+!/docs/PRIVACY.md
+!/docs/PRIVACY.zh-CN.md
+!/docs/assets/
+/docs/assets/*
+!/docs/assets/logo.webp
+!/docs/assets/screenshots-en.webp
+!/docs/assets/screenshots-zh-CN.webp
 
 # Generated files and user settings
 .DS_Store

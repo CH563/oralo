@@ -37,8 +37,8 @@ actor PronunciationLookup {
 }
 
 enum PronunciationCopy {
-    static var chinese: Bool { Locale.current.language.languageCode?.identifier == "zh" }
-    static func text(_ zh: String, _ en: String) -> String { chinese ? zh : en }
+    static var chinese: Bool { AppCopy.chinese }
+    static func text(_ zh: String, _ en: String) -> String { AppCopy.bilingual(zh, en) }
     static func kind(for text: String) -> Pronunciation.Kind {
         text.unicodeScalars.contains { (0x3400...0x9FFF).contains($0.value) || (0x20000...0x323AF).contains($0.value) } ? .pinyin : .ipa
     }

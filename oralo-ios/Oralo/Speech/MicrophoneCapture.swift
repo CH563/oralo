@@ -25,7 +25,13 @@ nonisolated enum CaptureFailure: Error, LocalizedError {
 
 @MainActor
 final class MicrophoneCapture {
+    enum SessionPolicy { case exclusive, externallyManaged }
+    private let sessionPolicy: SessionPolicy
     private let engine = AVAudioEngine()
+
+    // PiP owns its mixed audio session across microphone pause/restart. The
+    // full-screen reader retains its original exclusive recording behavior.
+    init(sessionPolicy: SessionPolicy = .exclusive) { self.sessionPolicy = sessionPolicy }
     private var continuation: AsyncThrowingStream<PCMChunk, Error>.Continuation?
     private var hasTap = false
     private var active = false
@@ -39,9 +45,11 @@ final class MicrophoneCapture {
 
     func start() throws -> AsyncThrowingStream<PCMChunk, Error> {
         let audio = AVAudioSession.sharedInstance()
-        try audio.setCategory(.record, mode: .measurement)
-        try audio.setActive(true)
-        active = true
+        if sessionPolicy == .exclusive {
+            try audio.setCategory(.record, mode: .measurement)
+            try audio.setActive(true)
+            active = true
+        }
         do {
             let input = engine.inputNode
             let format = input.outputFormat(forBus: 0)

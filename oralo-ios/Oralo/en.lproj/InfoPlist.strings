@@ -1,0 +1,2 @@
+"NSMicrophoneUsageDescription" = "Oralo listens while you speak to follow your script. Audio is processed on device and is not saved.";
+"NSSpeechRecognitionUsageDescription" = "Oralo uses on-device speech recognition to find your place in the script. You can use manual cue selection without it.";

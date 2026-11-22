@@ -25,7 +25,7 @@ struct ReadinessView: View {
                     VStack(alignment: .leading, spacing: 12) {
                         Text(model.state == .ready || request.manual ? t("准备好了，\n按你的节奏来。", "All set.\nGo at your pace.") : unavailable ? t("仍然可以，\n按你的节奏讲。", "You can still speak\nat your pace.") : t("开始之前，\n确认一下就好。", "Before you begin,\na quick check."))
                             .font(.largeTitle.bold())
-                        Text(request.document.displayTitle + " · " + (request.kind == .rehearsal ? t("排练", "Rehearsal") : t("演讲", "Presentation")))
+                        Text(request.document.localizedTitle + " · " + (request.kind == .rehearsal ? t("排练", "Rehearsal") : t("演讲", "Presentation")))
                             .font(.subheadline).foregroundStyle(.secondary)
                     }
                     if request.manual {
@@ -67,7 +67,7 @@ struct ReadinessView: View {
                 Image(systemName: model.state == .denied ? "mic.slash" : "mic").foregroundStyle(OraloStyle.readingAccent)
                 VStack(alignment: .leading, spacing: 5) {
                     Text(model.state == .ready ? (model.heardSound ? t("收音正常", "Sound is coming through") : t("收音已开启", "Microphone is ready")) : model.state == .denied ? t("需要开启权限", "Permission needed") : t("检查收音", "Check your microphone")).font(.headline)
-                    Text(t("手机放稳后，说一句试试", "Set your phone down and try a sentence")).font(.footnote).foregroundStyle(.secondary)
+                    Text(t("设备放稳后，说一句试试", "Set your device down and try a sentence")).font(.footnote).foregroundStyle(.secondary)
                 }
             }
             MicrophoneWaveform(levels: model.levels, isRecording: model.state == .ready)

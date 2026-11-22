@@ -12,6 +12,12 @@ public actor ScriptLibraryRepository {
     }
     private let directory: URL
     private let writeData: @Sendable (Data, URL) throws -> Void
+    private var writeGeneration = UUID()
+    private var writesSuspended = false
+    public func generation() -> UUID { writeGeneration }
+    public func suspendWrites() { writesSuspended = true; writeGeneration = UUID() }
+    public func resumeWrites() { writesSuspended = false }
+    private var deletion: ArchiveDeletion { ArchiveDeletion(directory: directory, name: "library") }
     private var cached: [ScriptDocument]?
     private var validatedData: Data?
     private var primary: URL { directory.appendingPathComponent("library.json") }
@@ -27,6 +33,11 @@ public actor ScriptLibraryRepository {
     }
 
     public func load() throws -> LoadResult {
+        if let pending = try deletion.staged() {
+            let documents = try decode(pending)
+            try deletion.finish(pending, write: writeData)
+            cached = documents; validatedData = pending
+        }
         if let cached { return LoadResult(documents: cached, recoveredFromBackup: false) }
         let manager = FileManager.default
         if !manager.fileExists(atPath: primary.path), !manager.fileExists(atPath: backup.path) {
@@ -58,7 +69,8 @@ public actor ScriptLibraryRepository {
     }
 
     @discardableResult
-    public func save(_ document: ScriptDocument) throws -> ScriptDocument {
+    public func save(_ document: ScriptDocument, generation: UUID? = nil) throws -> ScriptDocument {
+        guard !writesSuspended, generation == nil || generation == writeGeneration else { throw LocalDataError.staleWriter }
         var documents = try load().documents
         let index = documents.firstIndex(where: { $0.id == document.id })
         if let index {
@@ -76,7 +88,23 @@ public actor ScriptLibraryRepository {
         guard let index = documents.firstIndex(where: { $0.id == id }) else { return }
         guard documents[index].revision == revision else { throw ScriptLibraryError.conflict }
         documents.remove(at: index)
-        try commit(documents)
+        try commitDeletion(documents)
+    }
+
+    public func remove(id: UUID) throws {
+        let documents = try load().documents.filter { $0.id != id }
+        try commitDeletion(documents)
+    }
+    public func removeAll() throws {
+        // Explicit clear-all can also clear an unreadable archive without guessing its data.
+        try commitDeletion([])
+    }
+    private func commitDeletion(_ documents: [ScriptDocument]) throws {
+        let data = try JSONEncoder().encode(Archive(documents: documents))
+        _ = try decode(data)
+        writeGeneration = UUID()
+        try deletion.perform(data, write: writeData)
+        cached = documents; validatedData = data
     }
 
     private func commit(_ documents: [ScriptDocument]) throws {

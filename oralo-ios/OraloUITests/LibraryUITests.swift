@@ -18,7 +18,7 @@ final class LibraryUITests: XCTestCase {
         XCTAssertTrue(editor.waitForExistence(timeout: 8))
         editor.tap()
         editor.typeText("First we share the quarterly results.\nNext we improve delivery quality.\nThank you for listening.")
-        XCTAssertTrue(app.staticTexts["Saved on this iPhone"].waitForExistence(timeout: 8))
+        XCTAssertTrue(app.staticTexts["Saved on this device"].waitForExistence(timeout: 8))
         // Kill from the editor after autosave, without Save or navigating back.
         app.terminate(); app.launch()
         let card = app.buttons["script-Untitled script"]
@@ -129,7 +129,8 @@ final class LibraryUITests: XCTestCase {
         let app = app()
         openNewScriptMenu(app)
         app.buttons["import-script"].tap()
-        XCTAssertTrue(app.buttons["Cancel"].waitForExistence(timeout: 8))
+        // The system Files extension can take longer to cold-launch on a simulator.
+        XCTAssertTrue(app.buttons["Cancel"].waitForExistence(timeout: 25))
         app.buttons["Cancel"].tap()
         XCTAssertTrue(app.buttons["Cancel"].waitForNonExistence(timeout: 5))
         openNewScriptMenu(app)
@@ -139,7 +140,7 @@ final class LibraryUITests: XCTestCase {
         XCTAssertTrue(app.alerts["Check your script"].waitForExistence(timeout: 5))
         app.alerts.buttons["OK"].tap()
         XCTAssertTrue(app.buttons["script-options"].exists)
-        XCTAssertEqual(app.staticTexts["save-status"].label, "Saved on this iPhone")
+        XCTAssertEqual(app.staticTexts["save-status"].label, "Saved on this device")
     }
 
     @MainActor private func editorAction(_ app: XCUIApplication, _ action: String) {

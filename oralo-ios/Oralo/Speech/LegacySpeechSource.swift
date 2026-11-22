@@ -1,23 +1,28 @@
 import AVFoundation
+import OraloCore
 import Speech
 
 nonisolated private struct LegacySnapshot: Sendable {
     let text: String
     let isFinal: Bool
     let audioEnd: TimeInterval?
+    let finalizedSpans: [FinalSpeechSpan]
 }
 
 /// Explicit on-device-only path. Short recognition requests are renewed without replaying old text.
 @MainActor
 final class LegacySpeechSource: SpeechSource {
     private let vocabulary: [String]
-    private let microphone = MicrophoneCapture()
+    private let microphone: MicrophoneCapture
     private var recognitionTask: SFSpeechRecognitionTask?
     private var request: SFSpeechAudioBufferRecognitionRequest?
     private var output: AsyncThrowingStream<LegacySnapshot, Error>.Continuation?
     private var capturedSeconds: TimeInterval = 0
 
-    init(vocabulary: [String] = []) { self.vocabulary = Array(vocabulary.prefix(100)) }
+    init(vocabulary: [String] = [], sessionPolicy: MicrophoneCapture.SessionPolicy = .exclusive) {
+        self.vocabulary = Array(vocabulary.prefix(100))
+        microphone = MicrophoneCapture(sessionPolicy: sessionPolicy)
+    }
 
     func run(locale: Locale, downloadModels: Bool,
              event: @escaping @MainActor @Sendable (SpeechEvent) -> Void) async throws {
@@ -81,7 +86,10 @@ final class LegacySpeechSource: SpeechSource {
                 let text = String(result.bestTranscription.formattedString.suffix(768))
                 let segment = result.bestTranscription.segments.last
                 let audioEnd = segment.flatMap { $0.duration > 0 ? $0.timestamp + $0.duration : nil }
-                if case .dropped = continuation.yield(LegacySnapshot(text: text, isFinal: result.isFinal, audioEnd: audioEnd)) {
+                let spans = result.isFinal ? result.bestTranscription.segments.suffix(256).map {
+                    FinalSpeechSpan(text: $0.substring, start: $0.timestamp, end: $0.timestamp + $0.duration)
+                } : []
+                if case .dropped = continuation.yield(LegacySnapshot(text: text, isFinal: result.isFinal, audioEnd: audioEnd, finalizedSpans: spans)) {
                     continuation.finish(throwing: CaptureFailure.overloaded)
                 }
                 if result.isFinal { continuation.finish(); return }
@@ -120,7 +128,7 @@ final class LegacySpeechSource: SpeechSource {
             try Task.checkCancellation()
             request.append(try MicrophoneCapture.buffer(for: chunk))
             capturedSeconds += Double(chunk.samples.count) / chunk.sampleRate
-            event(.level(chunk.level))
+            event(.level(chunk.level, duration: Double(chunk.samples.count) / chunk.sampleRate))
         }
         throw SpeechFailure.ended
     }
@@ -131,6 +139,7 @@ final class LegacySpeechSource: SpeechSource {
             try Task.checkCancellation()
             let delay = result.audioEnd.map { capturedSeconds - $0 }
             event(.transcript(id: requestID, text: result.text, isFinal: result.isFinal, deliveryDelay: delay))
+            if result.isFinal { event(.finalized(id: requestID, spans: result.finalizedSpans)) }
         }
     }
 

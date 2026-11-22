@@ -142,7 +142,7 @@ struct PronunciationSheet: View {
                           systemImage: player.playing ? "stop.fill" : "speaker.wave.2.fill")
                         .font(.headline).frame(minHeight: 44)
                 }.disabled(custom || !player.available || loading).accessibilityIdentifier("pronunciation-listen")
-                    .accessibilityValue(player.playing ? "playing" : "stopped")
+                    .accessibilityValue(AppCopy.text(player.playing ? "Playing" : "Stopped"))
                 Spacer()
                 Text(t("美式英语", "US English")).font(.caption).foregroundStyle(.secondary)
             }

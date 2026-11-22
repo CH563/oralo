@@ -6,7 +6,6 @@ struct SpeechPrototypeView: View {
     enum StartMode { case manual, voice }
     @State private var model: SpeechPrototypeModel
     @State private var sheet: Panel?
-    @State private var resumeAfterSelection = false
     @State private var isPresenting = false
     @State private var controlsVisible = false
     @State private var manualPaused = false
@@ -15,6 +14,7 @@ struct SpeechPrototypeView: View {
     @State private var finishing = false
     @State private var hasStarted = false
     @State private var replayPronunciations: [UUID: [Pronunciation]] = [:]
+    private let readingPreferences: ReadingPreferences
     private let startMode: StartMode?
     private let recorder: RehearsalRecorder?
     private let onFinish: (() -> Void)?
@@ -27,11 +27,16 @@ struct SpeechPrototypeView: View {
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-    @ScaledMetric(relativeTo: .largeTitle) private var readingSize = 32
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
+    private var horizontalControls: Bool { verticalSizeClass == .compact || UIDevice.current.userInterfaceIdiom == .pad }
+    @ScaledMetric(relativeTo: .largeTitle) private var readingSize: CGFloat = 32
 
     init(model: SpeechPrototypeModel = SpeechPrototypeModel(), startMode: StartMode? = nil,
          title: String = "Oralo", pauseAfter: Set<UUID> = [], pronunciations: [UUID: [Pronunciation]] = [:],
          recorder: RehearsalRecorder? = nil, onFinish: (() -> Void)? = nil) {
+        let preferences = ReadingPreferencesStore.shared.value
+        readingPreferences = preferences
+        _readingSize = ScaledMetric(wrappedValue: CGFloat(preferences.fontSize), relativeTo: .largeTitle)
         _model = State(initialValue: model)
         _isPresenting = State(initialValue: startMode != nil)
         self.startMode = startMode; self.title = title; self.pauseAfter = pauseAfter
@@ -40,7 +45,7 @@ struct SpeechPrototypeView: View {
     }
 
     private enum Panel: String, Identifiable {
-        case setup, recovery, diagnostics, finish
+        case setup, recovery, diagnostics, finish, options
         var id: String { rawValue }
     }
 
@@ -51,6 +56,7 @@ struct SpeechPrototypeView: View {
                 script
             }
             .background(OraloStyle.canvas)
+            .preferredColorScheme(isPresenting ? readingPreferences.appearance.colorScheme : nil)
             .navigationTitle(title)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -73,6 +79,7 @@ struct SpeechPrototypeView: View {
                 if isPresenting {
                     if controlsVisible {
                         presentationHeader
+                            .padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? 28 : 0)
                     } else {
                         Button { controlsVisible = true } label: {
                             MicrophoneWaveform(levels: model.audioLevels, isRecording: model.isRecording)
@@ -81,9 +88,11 @@ struct SpeechPrototypeView: View {
                         }
                         .buttonStyle(.plain)
                         .accessibilityLabel("Show presentation controls")
-                        .accessibilityValue(model.isRecording ? "Microphone on" : "Microphone paused")
+                        .accessibilityValue(AppCopy.text(model.isRecording ? "Microphone on" : "Microphone paused"))
                         .accessibilityIdentifier("show-controls-waveform")
-                        .padding(.top, 4)
+                        // iPad's system multitasking affordance remains at the top
+                        // even when presentation hides the status bar.
+                        .padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? 32 : 4)
                     }
                 }
             }
@@ -92,6 +101,7 @@ struct SpeechPrototypeView: View {
             }
             .sheet(item: $sheet) { panel in
                 switch panel {
+                case .options: PresentationOptionsView()
                 case .setup: ScriptSetupView(model: model)
                 case .recovery: recovery
                 case .diagnostics: DiagnosticsView(model: model)
@@ -137,8 +147,10 @@ struct SpeechPrototypeView: View {
                     speechModel.sessionSignal = { [weak recorder, weak speechModel] signal in
                         guard let recorder, let model = speechModel else { return }
                         switch signal {
-                        case .started: recorder.startOrResume(cueID: model.follower.session.currentCueID)
+                        case .started: recorder.startVoiceRequest(cueID: model.follower.session.currentCueID)
                         case .recognized(let cueID, let holding): recorder.observe(cueID: cueID, holding: holding)
+                        case .audio(let level, let duration): recorder.observeAudio(level: level, duration: duration)
+                        case .finalized(let spans): recorder.observeFinalized(spans)
                         case .interrupted, .unavailable: recorder.pause(interrupted: true)
                         case .renewing: recorder.pause()
                         }
@@ -170,7 +182,7 @@ struct SpeechPrototypeView: View {
     private var statusPanel: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
-                Text(startMode == nil ? "VOICE FOLLOWING · PROTOTYPE" : "VOICE FOLLOWING")
+                Text(AppCopy.text(startMode == nil ? "VOICE FOLLOWING · PROTOTYPE" : "VOICE FOLLOWING"))
                     .font(.caption2.weight(.semibold)).foregroundStyle(.secondary)
                 Spacer()
                 Text("\(model.currentIndex + 1) / \(model.follower.cues.count)")
@@ -181,7 +193,7 @@ struct SpeechPrototypeView: View {
                 HStack(alignment: .top) {
                     Image(systemName: model.isRecording ? "mic.fill" : "pause.circle")
                         .foregroundStyle(model.isRecording ? Color.accentColor : .secondary)
-                    Text(model.stateLabel(at: timeline.date)).font(.subheadline.weight(.medium))
+                    Text(AppCopy.text(model.stateLabel(at: timeline.date))).font(.subheadline.weight(.medium))
                     Spacer(minLength: 8)
                     Text(Duration.seconds(Int64(model.activeSeconds(at: timeline.date))), format: .time(pattern: .minuteSecond))
                         .font(.caption.monospacedDigit()).foregroundStyle(.secondary)
@@ -192,7 +204,7 @@ struct SpeechPrototypeView: View {
                 MicrophoneWaveform(levels: model.audioLevels, isRecording: model.isRecording)
             }
             if let error = model.lastError {
-                Text(error).font(.footnote).foregroundStyle(.secondary)
+                Text(AppCopy.text(error)).font(.footnote).foregroundStyle(.secondary)
                 if model.needsModel {
                     Button("Download model & start") { model.start(downloadModels: true) }
                         .buttonStyle(.bordered)
@@ -221,6 +233,11 @@ struct SpeechPrototypeView: View {
                          UIApplication.shared.isIdleTimerDisabled = isPresenting && !manualPaused
                      },
                      revealControls: { controlsVisible = true })
+            .scaleEffect(x: ReadingPreferencesStore.shared.value.mirrorsText ? -1 : 1, y: 1)
+            .frame(maxWidth: 960)
+            .frame(maxWidth: .infinity)
+            .contentShape(.rect)
+            .onTapGesture { if isPresenting && !controlsVisible { controlsVisible = true } }
     }
 
     private func enterPresentation() {
@@ -244,10 +261,11 @@ struct SpeechPrototypeView: View {
                         if startMode != nil { dismiss() }
                     }
                 }
+                .frame(width: 64)
                 .accessibilityIdentifier("exit-presentation")
-                Spacer()
                 VStack(spacing: 3) {
                     MicrophoneWaveform(levels: model.audioLevels, isRecording: model.isRecording)
+                    HStack(spacing: 8) {
                     Text("\(model.currentIndex + 1) / \(model.follower.cues.count)")
                         .font(.caption2.monospacedDigit())
                         .accessibilityIdentifier("presentation-position")
@@ -258,13 +276,15 @@ struct SpeechPrototypeView: View {
                                 .foregroundStyle(.secondary).accessibilityIdentifier("session-duration")
                         }
                     }
+                    }
                     if usingManual {
-                        Text(manualPaused ? "Paused · Manual" : "Manual")
+                        Text(AppCopy.text(manualPaused ? "Paused · Manual" : "Manual"))
                             .font(.caption2).foregroundStyle(.secondary)
                     }
                 }
-                Spacer()
+                .frame(maxWidth: .infinity)
                 OraloAction(title: "Hide", symbol: "eye.slash", compact: true) { controlsVisible = false }
+                    .frame(width: 64)
                     .accessibilityIdentifier("hide-controls")
             }
             .padding(.horizontal, 16).padding(.vertical, 8)
@@ -289,11 +309,11 @@ struct SpeechPrototypeView: View {
     @ViewBuilder private var controls: some View {
         if isPresenting {
             OraloGlassGroup {
-                HStack(spacing: 10) {
-                    OraloAction(title: "Back", symbol: "backward.end") { move(-1) }
+                HStack(spacing: 6) {
+                    OraloAction(title: "Back", symbol: "backward.end", compact: dynamicTypeSize.isAccessibilitySize, horizontal: horizontalControls) { move(-1) }
                         .disabled(model.currentIndex == 0).accessibilityIdentifier("previous-cue")
                     OraloAction(title: usingManual ? (manualPaused ? "Resume" : "Pause") : (model.busy ? (model.isPreparing ? "Cancel" : "Pause") : "Resume"),
-                                symbol: usingManual ? (manualPaused ? "play.fill" : "pause.fill") : (model.busy ? "pause.fill" : "mic.fill"), prominent: true) {
+                                symbol: usingManual ? (manualPaused ? "play.fill" : "pause.fill") : (model.busy ? "pause.fill" : "mic.fill"), prominent: true, compact: dynamicTypeSize.isAccessibilitySize, horizontal: horizontalControls) {
                         if usingManual {
                             manualPaused.toggle()
                             if manualPaused { recorder?.pause() }
@@ -301,12 +321,17 @@ struct SpeechPrototypeView: View {
                             UIApplication.shared.isIdleTimerDisabled = !manualPaused
                         } else if model.busy { recorder?.pause(); model.pause() } else { model.start() }
                     }.accessibilityIdentifier("start-stop")
-                    OraloAction(title: "Next", symbol: "forward.end") { move(1) }
+                    OraloAction(title: "Next", symbol: "forward.end", compact: dynamicTypeSize.isAccessibilitySize, horizontal: horizontalControls) { move(1) }
                         .disabled(model.currentIndex + 1 == model.follower.cues.count).accessibilityIdentifier("next-cue")
-                    OraloAction(title: "Pick up", symbol: "arrow.uturn.backward") { openRecovery() }
+                    OraloAction(title: "Pick up", symbol: "arrow.uturn.backward", compact: dynamicTypeSize.isAccessibilitySize, horizontal: horizontalControls) { openRecovery() }
                         .accessibilityIdentifier("recovery")
+                    OraloAction(title: t("设置", "Settings"), symbol: "slider.horizontal.3", compact: dynamicTypeSize.isAccessibilitySize, horizontal: horizontalControls) { sheet = .options }
+                        .accessibilityLabel(t("演讲选项", "Presentation options"))
+                        .accessibilityIdentifier("presentation-options")
                 }
-            }.padding(.horizontal, 20).padding(.top, 10).padding(.bottom, 12)
+                .controlSize(.small)
+            }.frame(maxWidth: 680).padding(.horizontal, 16).padding(.top, 8).padding(.bottom, 12)
+                .frame(maxWidth: .infinity)
         } else { prototypeControls }
     }
 
@@ -318,7 +343,6 @@ struct SpeechPrototypeView: View {
     }
 
     private func openRecovery() {
-        resumeAfterSelection = usingManual ? !manualPaused : model.busy
         recorder?.pause()
         if usingManual { manualPaused = true }
         model.pause()
@@ -399,12 +423,13 @@ struct SpeechPrototypeView: View {
         NavigationStack {
             List(Array(model.follower.cues.enumerated()), id: \.element.id) { index, cue in
                 Button {
-                    selectCue(cue, reason: .selection, resume: resumeAfterSelection)
+                    selectCue(cue, reason: .selection, resume: false)
+                    controlsVisible = true
                     UIApplication.shared.isIdleTimerDisabled = isPresenting && !manualPaused
                     sheet = nil
                 } label: {
                     VStack(alignment: .leading, spacing: 6) {
-                        Text("\(index + 1)\(index == model.currentIndex ? " · Current" : "")")
+                        Text("\(index + 1)" + (index == model.currentIndex ? t(" · 当前", " · Current") : ""))
                             .font(.caption).foregroundStyle(.secondary)
                         Text(cue.text).font(.title3).foregroundStyle(.primary)
                     }.padding(.vertical, 8)

@@ -9,7 +9,7 @@ struct DiagnosticsView: View {
         NavigationStack {
             Form {
                 Section("What the recognizer heard · memory only") {
-                    Text(model.transcript.isEmpty ? "No transcript yet." : model.transcript)
+                    Text(model.transcript.isEmpty ? AppCopy.text("No transcript yet.") : model.transcript)
                         .textSelection(.enabled)
                     Text("The report below excludes this text and your script.")
                         .font(.caption).foregroundStyle(.secondary)

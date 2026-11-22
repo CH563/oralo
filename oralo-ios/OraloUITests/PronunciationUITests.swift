@@ -94,7 +94,10 @@ final class PronunciationUITests: XCTestCase {
     @MainActor func testAddChinesePinyinFromSelectedText() {
         let app = launch()
         let text = app.textViews["saved-script-editor"]
-        text.coordinate(withNormalizedOffset: .zero).withOffset(CGVector(dx: 42, dy: 84)).doubleTap()
+        let word = text.coordinate(withNormalizedOffset: .zero).withOffset(CGVector(dx: 42, dy: 84))
+        word.tap()
+        XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 5))
+        word.doubleTap()
         XCTAssertTrue(app.menuItems["Pronunciation"].waitForExistence(timeout: 5))
         app.menuItems["Pronunciation"].tap()
         XCTAssertTrue(app.buttons["pronunciation-save"].waitForExistence(timeout: 5))

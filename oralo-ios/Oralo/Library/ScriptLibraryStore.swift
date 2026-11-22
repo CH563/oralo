@@ -6,6 +6,13 @@ import OraloCore
 final class ScriptLibraryStore {
     let repository: ScriptLibraryRepository
     let rehearsals: RehearsalStore
+    let preferences = ReadingPreferencesStore.shared
+    let floating = FloatingPromptController()
+    var floatingVisible = false
+    let removal: LocalDataRemoval
+    private(set) var generation = UUID()
+    private(set) var validity = UUID()
+    var canRemoveData: Bool { !working && !loading && rehearsals.activeSessions.isEmpty }
     private(set) var documents: [ScriptDocument] = []
     private(set) var loaded = false
     private(set) var loading = false
@@ -23,17 +30,25 @@ final class ScriptLibraryStore {
         #endif
         repository = ScriptLibraryRepository(directory: directory)
         rehearsals = RehearsalStore(directory: directory.appending(path: "Rehearsals", directoryHint: .isDirectory))
+        removal = LocalDataRemoval(directory: directory, scripts: repository, rehearsals: rehearsals.repository)
     }
 
     func load() async {
-        guard !loading else { return }
+        guard !loading, !working else { return }
         loading = true
         defer { loading = false }
         do {
+            if let pending = try await removal.pending() {
+                floating.removeData(pending)
+                try await removal.prepare(pending)
+                if pending == .all { preferences.clearAll() }
+                try await removal.finish()
+            }
+            generation = await repository.generation()
             let result = try await repository.load()
             documents = result.documents.sorted { $0.updatedAt > $1.updatedAt }
             #if DEBUG
-            if documents.isEmpty, ProcessInfo.processInfo.arguments.contains("--ui-pronunciation-fixture"),
+            if documents.isEmpty, !ReadingPreferencesStore.defaults.bool(forKey: "ui.fixture.seeded"), ProcessInfo.processInfo.arguments.contains("--ui-pronunciation-fixture"),
                ProcessInfo.processInfo.arguments.contains(where: { $0.hasPrefix("--ui-library=") }) {
                 var sample = ScriptDocument(title: "Reading rehearsal", text: "roadmap\n夯实\nmilestone\n本季度收入增长18%，交付周期缩短到12天。\n接下来继续夯实基础，完善 roadmap，明确每个 milestone。\n把计划变成客户看得见的改变。")
                 if ProcessInfo.processInfo.arguments.contains("--ui-pronunciation-seeded") {
@@ -45,7 +60,7 @@ final class ScriptLibraryStore {
                 }
                 documents = [try await repository.save(sample)]
             }
-            if documents.isEmpty, ProcessInfo.processInfo.arguments.contains("--ui-rehearsal-fixture"),
+            if documents.isEmpty, !ReadingPreferencesStore.defaults.bool(forKey: "ui.fixture.seeded"), ProcessInfo.processInfo.arguments.contains("--ui-rehearsal-fixture"),
                ProcessInfo.processInfo.arguments.contains(where: { $0.hasPrefix("--ui-library=") }) {
                 var sample = ScriptDocument(title: "Quarterly report", text: PrototypeSamples.chinese)
                 for (term, reading, kind) in [("夯实", "hāng shí", Pronunciation.Kind.pinyin), ("roadmap", "/ˈroʊdˌmæp/", .ipa), ("milestone", "/ˈmaɪlˌstoʊn/", .ipa)] {
@@ -54,28 +69,31 @@ final class ScriptLibraryStore {
                 }
                 documents = [try await repository.save(sample)]
             }
+            if !documents.isEmpty { ReadingPreferencesStore.defaults.set(true, forKey: "ui.fixture.seeded") }
             #endif
+            floating.prune(liveIDs: Set(documents.map(\.id)))
             loaded = true; error = nil
             await rehearsals.load(liveScriptIDs: Set(documents.map(\.id)))
             if result.recoveredFromBackup {
                 recoveryNotice = "Recovered the last readable backup. Check your latest edits. The unreadable file has been kept for recovery."
             }
-        } catch { self.error = error.localizedDescription }
+        } catch { self.error = AppCopy.error(error) }
     }
 
-    func accept(_ document: ScriptDocument) {
+    func accept(_ document: ScriptDocument, validity expected: UUID? = nil) {
+        guard expected == nil || expected == validity else { return }
         documents.removeAll { $0.id == document.id }
         documents.insert(document, at: 0)
     }
 
-    func create(text: String = "", title: String = "Untitled script") async -> ScriptDocument? {
+    func create(text: String = "", title: String = "", localeID: String? = nil) async -> ScriptDocument? {
         guard loaded, !working else { return nil }
         working = true
         defer { working = false }
         do {
-            let saved = try await repository.save(ScriptDocument(title: title, text: text))
+            let saved = try await repository.save(ScriptDocument(title: title, text: text, localeID: localeID ?? preferences.value.localeID), generation: generation)
             accept(saved); return saved
-        } catch { self.error = error.localizedDescription; return nil }
+        } catch { self.error = AppCopy.error(error); return nil }
     }
 
     func importFile(_ url: URL) async -> ScriptDocument? {
@@ -84,21 +102,48 @@ final class ScriptLibraryStore {
         defer { working = false }
         do {
             let text = try await ScriptFileReader.shared.read(url)
-            let saved = try await repository.save(ScriptDocument(title: url.deletingPathExtension().lastPathComponent, text: text))
+            let saved = try await repository.save(ScriptDocument(title: url.deletingPathExtension().lastPathComponent, text: text, localeID: preferences.value.localeID), generation: generation)
             accept(saved); return saved
-        } catch { self.error = error.localizedDescription; return nil }
+        } catch { self.error = AppCopy.error(error); return nil }
+    }
+
+    func openFloating(_ document: ScriptDocument) {
+        let lease = validity
+        floating.prepare(document) { [weak self] in
+            guard let self else { return false }
+            return self.loaded && self.validity == lease && self.documents.contains { $0.id == document.id }
+        }
+        floating.didReturn = { [weak self] _ in self?.floatingVisible = true }
+        floatingVisible = true
     }
 
     func delete(_ document: ScriptDocument) async {
-        guard !working else { return }
-        working = true
+        _ = await removeData(.script(document.id), revision: document.revision)
+    }
+    @discardableResult func removeData(_ operation: LocalDataRemoval.Operation, revision: Int? = nil) async -> Bool {
+        guard canRemoveData else { return false }
+        working = true; validity = UUID(); error = nil
         defer { working = false }
         do {
-            try await repository.delete(id: document.id, revision: document.revision)
-            documents.removeAll { $0.id == document.id }
-            try await rehearsals.delete(scriptID: document.id)
-        } catch { self.error = error.localizedDescription }
+            floating.removeData(operation)
+            if operation == .all { floatingVisible = false }
+            try await removal.prepare(operation, revision: revision)
+            if operation == .all { preferences.reset() }
+            try await removal.finish()
+            generation = await repository.generation()
+            documents = try await repository.load().documents.sorted { $0.updatedAt > $1.updatedAt }
+            await rehearsals.reload(liveScriptIDs: Set(documents.map(\.id)))
+            guard rehearsals.error == nil else { error = rehearsals.error; return false }
+            recoveryNotice = nil; loaded = true
+            if operation == .all { preferences.clearAll() }
+            return true
+        } catch {
+            self.error = AppCopy.error(error)
+            loaded = false // Keep partial deletion behind a retry; never call it an empty library.
+            return false
+        }
     }
+
 }
 
 /// Files providers may block while downloading. Coordinate reads off the UI actor.
@@ -126,6 +171,8 @@ final class ScriptEditorModel {
     var error: String?
     var actionError: String?
     let library: ScriptLibraryStore
+    private let writeGeneration: UUID
+    private let libraryValidity: UUID
     @ObservationIgnored private var debounce: Task<Void, Never>?
     @ObservationIgnored private var activeSave: Task<Bool, Never>?
     @ObservationIgnored private var generation = 0
@@ -133,6 +180,7 @@ final class ScriptEditorModel {
 
     init(document: ScriptDocument, library: ScriptLibraryStore) {
         self.document = document; self.library = library
+        writeGeneration = library.generation; libraryValidity = library.validity
     }
 
     func changeText(_ text: String) {
@@ -149,7 +197,7 @@ final class ScriptEditorModel {
             let record = Date().timeIntervalSince(lastTextEdit) > 1
             change(recordUndo: record) { $0 = updated }
             lastTextEdit = .now
-        } catch { actionError = error.localizedDescription }
+        } catch { actionError = AppCopy.error(error) }
     }
 
     func savePronunciation(_ reading: Pronunciation) async -> Bool {
@@ -158,7 +206,7 @@ final class ScriptEditorModel {
             try updated.setPronunciation(reading)
             change { $0 = updated }
             return await flush()
-        } catch { actionError = error.localizedDescription; return false }
+        } catch { actionError = AppCopy.error(error); return false }
     }
 
     func change(recordUndo: Bool = true, _ operation: (inout ScriptDocument) -> Void) {
@@ -175,7 +223,7 @@ final class ScriptEditorModel {
             var edited = document
             try edited.split(id, at: offset)
             change { $0 = edited }
-        } catch { self.actionError = error.localizedDescription }
+        } catch { self.actionError = AppCopy.error(error) }
     }
 
     func undo() {
@@ -198,6 +246,7 @@ final class ScriptEditorModel {
     /// Drain writes before leaving or starting. An older save cannot overwrite newer edits.
     func flush(finalizeOriginal: Bool = false) async -> Bool {
         debounce?.cancel(); debounce = nil
+        guard libraryValidity == library.validity else { error = AppCopy.error(LocalDataError.staleWriter); return false }
         if finalizeOriginal, document.originalText == nil {
             let old = document
             document.captureOriginalIfNeeded()
@@ -220,13 +269,13 @@ final class ScriptEditorModel {
         while dirty {
             let snapshot = document, savedGeneration = generation
             do {
-                let saved = try await library.repository.save(snapshot)
-                library.accept(saved)
+                let saved = try await library.repository.save(snapshot, generation: writeGeneration)
+                library.accept(saved, validity: libraryValidity)
                 if generation == savedGeneration { document = saved; dirty = false }
                 else { document.adoptSaveMetadata(from: saved) }
                 error = nil
             } catch {
-                self.error = "Couldn’t save. Your edits are still on this screen. \(error.localizedDescription)"
+                self.error = AppCopy.text("Couldn’t save. Your edits are still on this screen.") + " " + AppCopy.error(error)
                 return false
             }
         }

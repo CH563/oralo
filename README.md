@@ -1,75 +1,82 @@
-# Oralo
+<p align="center">
+  <a href="https://oralo.fun/"><img src="docs/assets/logo.webp" width="96" height="96" alt="Oralo logo"></a>
+</p>
+<h1 align="center">Oralo</h1>
+<p align="center"><strong>AI Teleprompter, at Your Pace</strong></p>
+<p align="center">Look up. Say it your way. Find your next line.</p>
+<p align="center">
+  English · <a href="README.zh-CN.md">简体中文</a><br>
+  <a href="https://oralo.fun/">Website</a> ·
+  <a href="https://apps.apple.com/app/id6835449605">App Store</a> ·
+  <a href="docs/TECHNICAL.md">How it works</a> ·
+  <a href="docs/PRIVACY.md">Privacy</a>
+</p>
+<p align="center">iPhone &amp; iPad · iOS 18+ · Swift / SwiftUI · MIT</p>
 
-**AI Teleprompter, at Your Pace**
+Oralo is an open-source teleprompter for presentations, reports and video creation. It follows your speech, holds your place when you pause or go off script, and helps you pick up the original text again. Prepare difficult words before you speak, then keep your attention on your audience.
 
-**接着讲 — 跟随你的 AI 提词器**
+<p align="center">
+  <a href="docs/assets/screenshots-en.webp"><img src="docs/assets/screenshots-en.webp" width="1200" alt="Oralo App Store screenshots showing voice following, returning to a script, pronunciation hints, Picture in Picture and mirror mode"></a>
+</p>
 
-Oralo is an open-source iPhone teleprompter that follows your speech, waits when you pause, and helps you return to your script after speaking freely. Speech matching runs on your device.
+## Made for the way you speak
 
-Oralo 是一款开源 iPhone 提词器：跟随语速、停顿时等待，自由发挥后帮助你接回原稿。语音匹配在设备端完成。
-
-## Features / 功能
-
-- A script library with plain-text import, editing, and automatic local saving. 稿库、纯文本导入、编辑与本机自动保存。
-- Speech following, character-level highlighting, and manual cue selection. 语音跟随、逐字高亮与手动选句接稿。
-- Chinese pinyin, English IPA, and pronunciation playback while preparing. 中文拼音、英文音标与备稿试听。
-- Readiness checks, rehearsals, session reviews, and navigation back to the original sentence for editing. 准备检查、排练、复盘与原句编辑。
-- Full-screen reading, light and dark appearances, and system language matching. 全屏提词、浅深色与系统语言匹配。
-- iOS 18 or later, with native Liquid Glass controls on iOS 26 and later. 最低兼容 iOS 18，iOS 26 及以上使用原生液态玻璃控件。
-
-## Privacy / 隐私
-
-**Oralo does not upload your scripts or microphone audio to a developer-operated server. It does store your work locally so you can reopen it.**
-
-**Oralo 不向开发者服务器上传你的讲稿或麦克风音频；为了保存与复盘，作品会存储在本机。**
-
-| Data / 数据 | Current behavior / 当前行为 |
+| Feature | What it does |
 | --- | --- |
-| Scripts and pronunciation notes / 讲稿与注音 | Saved in the app's local storage, including recovery copies. 保存在应用本机存储中，包含恢复副本。 |
-| Rehearsal records / 排练记录 | Duration, cue events, and snapshots of the script and its pronunciation notes are saved locally. 时长、句子事件、当时的正文与注音快照保存在本机。 |
-| Microphone audio / 麦克风音频 | Processed through Apple's on-device speech APIs; the app does not write recordings to files. 通过 Apple 设备端语音接口处理，App 不保存录音文件。 |
-| Recognition text / 识别文本 | Used in memory for following; not saved as a transcript in rehearsal records. 在内存中用于跟随，不以转写全文形式写入排练记录。 |
-| Preferences / 偏好 | Stored locally using system preferences. 通过系统偏好存储保存在本机。 |
-| Accounts and tracking / 账号与追踪 | No account system, advertising SDK, or analytics SDK in this app. App 未接入账号系统、广告 SDK 或统计 SDK。 |
-| Diagnostics / 诊断 | Reports contain performance counters, device/system details, and event metadata. Sharing happens only when you choose it; reports exclude the script and transcription. 报告包含性能计数、设备与系统信息及事件元数据；仅由你主动分享，不含讲稿正文或识别全文。 |
+| **Follow your voice** | On-device speech recognition, character-level highlighting and a reading line held near the upper middle of the screen. |
+| **Go off script, then return** | Fresh speech can find a distinctive passage elsewhere in your script. Uncertain matches hold position; tap a passage to take control. |
+| **Prepare tricky words** | Add Chinese pinyin or English IPA above the original text. Listen to an English reference pronunciation while preparing. |
+| **Keep your script in view** | System Picture in Picture offers voice following or fixed-pace scrolling while you use another app. |
+| **Read through a mirror** | Mirror the manuscript and pronunciation hints for teleprompter hardware; controls remain readable. |
+| **Get ready and rehearse** | Import plain text, edit and save, check readiness, rehearse, review observations and return to the original sentence. |
+| **Know the size of your talk** | Script counts and adjustable speaking-time estimates, plus quick-start samples in the app's language. |
+| **Make it comfortable** | Portrait and landscape reading, iPad layouts, light and dark appearances, accessibility labels, and native Liquid Glass controls on supported systems. |
 
-On-device speech requires a supported device, language, and installed system model. Model or voice downloads and files you select from a cloud file provider may require a network connection. If on-device recognition is unavailable, Oralo offers manual reading rather than sending audio to a cloud recognizer. App data is not excluded from system device backups; those are controlled by your device settings. Local recovery copies can retain earlier saved content.
+The interface supports English, Simplified Chinese and Traditional Chinese. Speech recognition depends on the device, language and installed system models. PiP and simultaneous microphone use depend on iOS and the other app; interrupted input holds the reading position. Rehearsal observations are prompts for review, not pronunciation scores.
 
-设备端语音需要受支持的设备、语言和已安装的系统模型。模型、系统声音下载，以及从云文件提供方选择的文件，可能需要联网。设备端识别不可用时，可以手动提词，不会改用云端识别上传音频。当前实现未排除应用数据的系统设备备份，备份由设备设置管理；本机恢复副本可能保留较早保存的内容。
+## Local by design
 
-The implementation is available for inspection: [speech processing](oralo-ios/Oralo/Speech/), [script storage](oralo-ios/Packages/OraloCore/Sources/OraloCore/ScriptLibraryRepository.swift), [rehearsal storage](oralo-ios/Packages/OraloCore/Sources/OraloCore/RehearsalRepository.swift), and the [privacy manifest](oralo-ios/Oralo/PrivacyInfo.xcprivacy).
+**No account. No ads. No analytics SDK. No developer-operated speech server.**
 
-可通过上述语音处理、稿件存储、排练存储源码与隐私清单核对这些行为。这里描述的是当前 iOS App 的实现。
+Scripts, pronunciation notes, preferences and rehearsal records are saved on your device. Microphone audio is processed through Apple's on-device speech APIs; Oralo does not save audio recordings or full transcripts. If on-device recognition is unavailable, manual reading remains available without falling back to a cloud recognizer.
 
-## Build / 构建
+System models and voices may need downloading. Files chosen from a cloud provider, user-initiated sharing, external links and system device backups have their own network and storage behavior. Deletion clears the app's relevant recovery copies as well as its current data; exported copies and system backups are outside that operation.
 
-Use **Xcode 27.1** (the verified toolchain), with its iOS SDK and a simulator runtime. The deployment target is **iOS 18.0**. The app uses Apple frameworks and the included `OraloCore` Swift package; no API key or backend setup is required.
+Read the [data-handling details](docs/PRIVACY.md) or inspect the [speech](oralo-ios/Oralo/Speech/) and [storage](oralo-ios/Packages/OraloCore/Sources/OraloCore/ScriptLibraryRepository.swift) implementations.
 
-使用已验证的 **Xcode 27.1**、配套 iOS SDK 与模拟器运行时，最低部署系统为 **iOS 18.0**。App 使用 Apple 系统框架与仓库内的 `OraloCore` Swift 包，不需要 API Key 或后端配置。
+## Build it yourself
 
-1. Open `oralo-ios/Oralo.xcodeproj` in Xcode. 在 Xcode 打开该工程。
-2. Select the **Oralo** scheme and an iPhone simulator, then Run. 选择 Oralo scheme 与 iPhone 模拟器，运行。
-3. To run on an iPhone, select your own development team and a unique bundle identifier in Signing & Capabilities. Configure both **Oralo** and **OraloUITests** if running UI tests. 真机运行时使用自己的开发团队与唯一 Bundle ID；运行 UI 测试时也需配置 OraloUITests。
+The verified toolchain is **Xcode 27.1**, with its iOS SDK and a simulator runtime. The deployment target is **iOS 18.0**. `OraloCore` uses Swift tools 6.2 or later. The project uses Apple frameworks and an included local Swift package; **no API key or backend setup is needed**.
 
-Build without signing from the repository root / 在仓库根目录执行无签名构建：
+1. Open `oralo-ios/Oralo.xcodeproj` in Xcode.
+2. Select the **Oralo** scheme and an iPhone or iPad simulator, then run.
+3. For a physical device, choose your own development team and unique bundle identifier in **Signing & Capabilities**. Configure the UI test target too when running device tests.
+
+From the repository root:
 
 ```sh
 xcodebuild -project oralo-ios/Oralo.xcodeproj \
   -scheme Oralo -configuration Debug \
   -destination 'generic/platform=iOS Simulator' \
   CODE_SIGNING_ALLOWED=NO build
-```
 
-Run the core tests / 运行核心测试：
-
-```sh
 swift test --package-path oralo-ios/Packages/OraloCore
 ```
 
-See the [iOS README](oralo-ios/README.md) for the usage flow, code structure, and UI tests. 模拟器可检查流程，真实语音跟随效果需要 iPhone 麦克风验证。
+See the [iOS development guide](oralo-ios/README.md) for the source map and testing workflow.
 
-## License / 许可证
+## How it works
 
-[MIT](LICENSE). Third-party pronunciation data retains its own notices; see [pronunciation credits](oralo-ios/Oralo/Pronunciation/Resources/Pronunciation-Credits.txt).
+Oralo combines on-device recognition with local text alignment. A confirmed script position is kept separate from a small, bounded visual prediction, helping the highlight feel responsive without treating an estimate as recognized speech. The PiP reader reuses the same speech-following pipeline.
 
-项目使用 MIT 许可证；第三方读音数据保留各自的许可证与来源说明。
+The [technical guide](docs/TECHNICAL.md) explains matching and off-script recovery, recognition-delay compensation, character highlighting, PiP rendering and audio-session coordination, with links to the implementation and tests.
+
+## Feedback and contributions
+
+Use [GitHub Issues](https://github.com/CH563/oralo/issues) for reproducible problems or suggestions, and the [support page](https://oralo.fun/support/) for help. Include the iOS version, device type and steps to reproduce. Use sample scripts instead of private manuscripts; review diagnostics before sharing them.
+
+For changes to speech following, add or update a focused core test and describe the physical-device checks. Simulator fixtures do not establish real microphone latency or camera compatibility.
+
+## License
+
+[MIT](LICENSE). Third-party pronunciation data retains its own licenses and attribution; see [pronunciation credits](oralo-ios/Oralo/Pronunciation/Resources/Pronunciation-Credits.txt).

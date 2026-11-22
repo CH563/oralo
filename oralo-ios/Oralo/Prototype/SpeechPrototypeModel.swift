@@ -6,7 +6,10 @@ import UIKit
 @MainActor
 @Observable
 final class SpeechPrototypeModel {
-    enum SessionSignal { case started, recognized(UUID, Bool), interrupted, unavailable, renewing }
+    enum SessionSignal {
+        case started, recognized(UUID, Bool), interrupted, unavailable, renewing
+        case audio(Float, TimeInterval), finalized([FinalSpeechSpan])
+    }
     @ObservationIgnored var sessionSignal: ((SessionSignal) -> Void)?
 
     enum Backend: String, CaseIterable, Identifiable {
@@ -45,6 +48,7 @@ final class SpeechPrototypeModel {
     private(set) var events: [String] = []
     private(set) var readingPosition = ReadingCursor.Position(cueIndex: 0, characterCount: 0)
 
+    @ObservationIgnored private var capturePolicy: MicrophoneCapture.SessionPolicy = .exclusive
     @ObservationIgnored private var source: (any SpeechSource)?
     @ObservationIgnored private var task: Task<Void, Never>?
     @ObservationIgnored private var displayTask: Task<Void, Never>?
@@ -77,7 +81,8 @@ final class SpeechPrototypeModel {
     }
 
     /// One saved revision per presentation. The build 5 matching and display paths are reused.
-    init(snapshot: ScriptSnapshot) throws {
+    init(snapshot: ScriptSnapshot, capturePolicy: MicrophoneCapture.SessionPolicy = .exclusive) throws {
+        self.capturePolicy = capturePolicy
         follower = try FollowEngine(cues: snapshot.cues)
         draft = snapshot.cues.map(\.text).joined(separator: "\n")
         localeID = snapshot.localeID
@@ -123,6 +128,25 @@ final class SpeechPrototypeModel {
         runID = generation
         let opening = follower.cues[0].text, next = follower.cues[2].text
         receive(.started(id: request, engine: "UI fixture · no microphone"))
+        if ProcessInfo.processInfo.arguments.contains("--ui-review-observations") {
+            task = Task { [weak self] in
+                guard let self else { return }
+                self.receive(.transcript(id: request, text: opening, isFinal: true, deliveryDelay: nil))
+                for (level, count) in [(Float(0.6), 10), (Float(0.02), 100), (Float(0.6), 10)] {
+                    for _ in 0..<count {
+                        do { try await Task.sleep(for: .milliseconds(50)) } catch { return }
+                        guard self.runID == generation else { return }
+                        self.receive(.level(level, duration: 0.05))
+                    }
+                }
+                self.receive(.finalized(id: request, spans: [
+                    FinalSpeechSpan(text: opening, start: 0, end: 0.5),
+                    FinalSpeechSpan(text: opening, start: 5.5, end: 6)
+                ]))
+                self.receive(.transcript(id: request, text: next, isFinal: true, deliveryDelay: nil))
+            }
+            return true
+        }
         let steps: [(Double, String)] = [(0.2, opening), (0.5, "紫色火星山谷中的宇宙旅行"),
             (1.1, "紫色火星山谷中的宇宙旅行者"), (1.1, "紫色火星山谷中的宇宙旅行者正在漫步"), (1.1, next)]
         task = Task { [weak self] in
@@ -189,12 +213,12 @@ final class SpeechPrototypeModel {
         lastVoiceAt = .distantPast
         let selected: any SpeechSource
         if backend == .automatic, #available(iOS 26, *) {
-            selected = ModernSpeechSource()
+            selected = ModernSpeechSource(sessionPolicy: capturePolicy)
         } else {
             let terms = CueMatcher.tokens(draft).filter { token in
                 token.count >= 3 && token.unicodeScalars.allSatisfy { (97...122).contains($0.value) }
             }
-            selected = LegacySpeechSource(vocabulary: Array(Set(terms)).sorted())
+            selected = LegacySpeechSource(vocabulary: Array(Set(terms)).sorted(), sessionPolicy: capturePolicy)
         }
         source = selected
         let locale = Locale(identifier: localeID)
@@ -208,9 +232,9 @@ final class SpeechPrototypeModel {
                 guard let self, self.runID == generation, !Task.isCancelled else { return }
                 self.pause(reason: "Paused · manual selection available")
                 self.lastError = error.localizedDescription
-                self.sessionSignal?(.unavailable)
                 if case SpeechFailure.modelRequired = error { self.needsModel = true }
                 if case SpeechFailure.permission = error { self.permissionDenied = true }
+                self.sessionSignal?(.unavailable)
                 let nsError = error as NSError
                 self.log("Error \(nsError.domain) / \(nsError.code)")
             }
@@ -409,7 +433,12 @@ final class SpeechPrototypeModel {
             if currentIndex != oldIndex { automaticMoves += 1; log("Auto cue \(oldIndex + 1) → \(currentIndex + 1)") }
             if oldMode == .holding, follower.session.mode == .following { holdReturns += 1 }
             sessionSignal?(.recognized(follower.session.currentCueID, follower.session.mode == .holding))
-        case .level(let value):
+        case .finalized(let id, let spans):
+            guard id == requestID, isRecording else { return }
+            sessionSignal?(.finalized(spans))
+        case .level(let value, let duration):
+            guard isRecording else { return }
+            sessionSignal?(.audio(value, duration))
             if value > 0.2 { lastVoiceAt = .now }
             guard Date().timeIntervalSince(lastMeterAt) >= 0.1 else { return }
             lastMeterAt = .now

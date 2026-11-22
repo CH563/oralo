@@ -69,7 +69,7 @@ final class RehearsalUITests: XCTestCase {
         XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 5))
         text.typeText("Updated quarterly figures.")
         option(app, "save-script")
-        XCTAssertTrue(app.staticTexts["Saved on this iPhone"].waitForExistence(timeout: 8))
+        XCTAssertTrue(app.staticTexts["Saved on this device"].waitForExistence(timeout: 8))
         XCTAssertTrue(app.buttons["pronunciation-count"].label.contains("3"))
         app.terminate(); app.launch()
         XCTAssertTrue(app.buttons["script-Quarterly report"].waitForExistence(timeout: 10)); app.buttons["script-Quarterly report"].coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()

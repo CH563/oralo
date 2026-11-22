@@ -13,12 +13,12 @@ struct ScriptSetupView: View {
             Form {
                 Section("Recognition") {
                     Picker("Language", selection: $localeID) {
-                        Text("中文 · Mandarin").tag("zh-CN")
-                        Text("English · US").tag("en-US")
+                        Text("Mandarin").tag("zh-CN")
+                        Text("English (US)").tag("en-US")
                     }
                     Picker("Engine", selection: $backend) {
                         ForEach(SpeechPrototypeModel.Backend.allCases) { mode in
-                            Text(mode.rawValue).tag(mode)
+                            Text(AppCopy.text(mode.rawValue)).tag(mode)
                         }
                     }
                     Text("System uses the new on-device model on iOS 26/27. Compatibility tests the iOS 18 recognition path. Mixed-language accuracy is experimental.")
@@ -47,7 +47,7 @@ struct ScriptSetupView: View {
                             model.backend = backend
                             dismiss()
                         }
-                        catch { self.error = error.localizedDescription }
+                        catch { self.error = AppCopy.error(error) }
                     }
                 }
             }

@@ -19,6 +19,7 @@ public struct ScriptDocument: Codable, Equatable, Identifiable, Sendable {
     public private(set) var text: String
     public private(set) var segments: [ScriptSegment]
     public private(set) var hasCustomLayout = false
+    public private(set) var layoutNeedsReview = false
     public internal(set) var pronunciations: [Pronunciation] = []
     public var localeID: String
     public internal(set) var revision: Int
@@ -49,8 +50,10 @@ public struct ScriptDocument: Codable, Equatable, Identifiable, Sendable {
         // Whole-document replacements have no reliable occurrence identity. Exact editor
         // operations use applyTextEdit instead; retain uncertain hints for review.
         for index in pronunciations.indices { pronunciations[index].span = nil }
+        let hadCustomLayout = hasCustomLayout
         text = value
         rebuildSentences()
+        layoutNeedsReview = hadCustomLayout
     }
 
     public mutating func applyTextEdit(_ range: NSRange, replacement: String) throws {
@@ -60,10 +63,71 @@ public struct ScriptDocument: Codable, Equatable, Identifiable, Sendable {
         }
         let value = text.replacingCharacters(in: swiftRange, with: replacement)
         guard value != text else { return }
+        let oldSpans = segmentSpans()
         for index in pronunciations.indices { pronunciations[index].migrate(replacing: range, with: replacement) }
         text = value
-        rebuildSentences()
+        if hasCustomLayout {
+            preserveLayout(after: range, replacement: replacement, oldSpans: oldSpans)
+        } else {
+            let needsReview = layoutNeedsReview
+            rebuildSentences()
+            layoutNeedsReview = needsReview
+        }
     }
+
+    /// A local edit keeps the sentence identity and pause. Edits crossing manual
+    /// boundaries reparse only that region; unaffected occurrences keep their IDs.
+    private mutating func preserveLayout(after edit: NSRange, replacement: String, oldSpans: [(UUID, NSRange)]) {
+        let delta = replacement.utf16.count - edit.length
+        let containing = oldSpans.first { _, span in
+            edit.location >= span.location && NSMaxRange(edit) <= NSMaxRange(span)
+                && (edit.length > 0 || edit.location < NSMaxRange(span))
+        } ?? (edit.length == 0 ? oldSpans.last(where: { NSMaxRange($0.1) == edit.location }) : nil)
+        if let (id, span) = containing, let index = segments.firstIndex(where: { $0.id == id }) {
+            let newSpan = NSRange(location: span.location, length: span.length + delta)
+            if let range = Range(newSpan, in: text) {
+                let changed = String(text[range])
+                if !changed.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                    segments[index].text = changed
+                    return
+                }
+            }
+        }
+        let oldByID = Dictionary(uniqueKeysWithValues: segments.map { ($0.id, $0) })
+        var positioned: [(segment: ScriptSegment, span: NSRange)] = []
+        let prefix = oldSpans.filter { NSMaxRange($0.1) <= edit.location }
+        // Select suffix by identity explicitly; a zero-length edit may share a boundary.
+        let prefixIDs = Set(prefix.map(\.0))
+        let remaining = oldSpans.filter { $0.1.location >= NSMaxRange(edit) && !prefixIDs.contains($0.0) }
+        for (id, span) in prefix { if let segment = oldByID[id] { positioned.append((segment, span)) } }
+        let middleStart = prefix.last.map { NSMaxRange($0.1) } ?? 0
+        let middleEnd = remaining.first.map { $0.1.location + delta } ?? text.utf16.count
+        if middleEnd > middleStart, let middleRange = Range(NSRange(location: middleStart, length: middleEnd - middleStart), in: text) {
+            let middle = String(text[middleRange])
+            var searchStart = middle.startIndex
+            for segment in Self.parseSegments(middle) {
+                if let range = middle.range(of: segment.text, range: searchStart..<middle.endIndex) {
+                    let local = NSRange(range, in: middle)
+                    positioned.append((segment, NSRange(location: middleStart + local.location, length: local.length)))
+                    searchStart = range.upperBound
+                }
+            }
+        }
+        for (id, span) in remaining {
+            if let segment = oldByID[id] { positioned.append((segment, NSRange(location: span.location + delta, length: span.length))) }
+        }
+        for index in positioned.indices {
+            let end = NSMaxRange(positioned[index].span)
+            let next = index + 1 < positioned.count ? positioned[index + 1].span.location : end
+            if let gap = Range(NSRange(location: end, length: max(0, next - end)), in: text) {
+                positioned[index].segment.separatorAfter = String(text[gap])
+            }
+        }
+        segments = positioned.map(\.segment)
+        layoutNeedsReview = true
+    }
+
+    public mutating func confirmLayout() { layoutNeedsReview = false }
 
     public mutating func rebuildSentences() {
         let parsed = Self.parseSegments(text)
@@ -83,6 +147,7 @@ public struct ScriptDocument: Codable, Equatable, Identifiable, Sendable {
             return cue
         }
         hasCustomLayout = false
+        layoutNeedsReview = false
     }
 
     public mutating func split(_ id: UUID, at characterOffset: Int) throws {
@@ -153,7 +218,7 @@ public struct ScriptDocument: Codable, Equatable, Identifiable, Sendable {
     }
 
     private enum CodingKeys: String, CodingKey {
-        case id, title, originalText, text, segments, hasCustomLayout, pronunciations, localeID, revision, createdAt, updatedAt
+        case id, title, originalText, text, segments, hasCustomLayout, layoutNeedsReview, pronunciations, localeID, revision, createdAt, updatedAt
     }
 
     public init(from decoder: any Decoder) throws {
@@ -164,6 +229,7 @@ public struct ScriptDocument: Codable, Equatable, Identifiable, Sendable {
         text = try values.decode(String.self, forKey: .text)
         segments = try values.decode([ScriptSegment].self, forKey: .segments)
         hasCustomLayout = try values.decode(Bool.self, forKey: .hasCustomLayout)
+        layoutNeedsReview = try values.decodeIfPresent(Bool.self, forKey: .layoutNeedsReview) ?? false
         pronunciations = try values.decodeIfPresent([Pronunciation].self, forKey: .pronunciations) ?? []
         localeID = try values.decode(String.self, forKey: .localeID)
         revision = try values.decode(Int.self, forKey: .revision)

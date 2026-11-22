@@ -15,25 +15,44 @@ struct PronunciationTextEditor: UIViewRepresentable {
     let edit: (NSRange, String) -> Void
     let selectReading: (NSRange) -> Void
     var focus: ScriptTextFocus? = nil
+    var allowsEditing = true
 
     func makeUIView(context: Context) -> ManuscriptTextView {
         let view = ManuscriptTextView()
+        view.allowsEditing = allowsEditing
         view.delegate = context.coordinator
         view.onReading = { context.coordinator.open($0, in: view) }
         return view
     }
     func updateUIView(_ view: ManuscriptTextView, context: Context) {
         context.coordinator.parent = self
+        context.coordinator.synchronizeText(document.text)
+        view.allowsEditing = allowsEditing
         view.refresh(document)
         if let focus { view.focus(focus) }
-        if !editing && view.isFirstResponder { view.resignFirstResponder() }
+        context.coordinator.resignIfNeeded(view)
     }
     func makeCoordinator() -> Coordinator { Coordinator(self) }
 
     final class Coordinator: NSObject, UITextViewDelegate {
         var parent: PronunciationTextEditor
         private var pending: (old: String, range: NSRange, replacement: String)?
-        init(_ parent: PronunciationTextEditor) { self.parent = parent }
+        private var resignationQueued = false
+        private var submittedText: String
+        func synchronizeText(_ text: String) { submittedText = text }
+
+        // UIKit asks SwiftUI for its next responder. Resigning during updateUIView
+        // recursively updates that same graph on iOS 27; leave this transaction first.
+        func resignIfNeeded(_ view: UITextView) {
+            guard !parent.editing, view.isFirstResponder, !resignationQueued else { return }
+            resignationQueued = true
+            Task { @MainActor [weak self, weak view] in
+                guard let self else { return }
+                defer { self.resignationQueued = false }
+                if !self.parent.editing, let view, view.isFirstResponder { view.resignFirstResponder() }
+            }
+        }
+        init(_ parent: PronunciationTextEditor) { self.parent = parent; submittedText = parent.document.text }
 
         // A real text-selection gesture must mark editing immediately; otherwise a
         // keyboard layout update can resign the responder before the second tap.
@@ -56,11 +75,12 @@ struct PronunciationTextEditor: UIViewRepresentable {
             return true
         }
         func textViewDidChange(_ textView: UITextView) {
-            if let pending, pending.old == parent.document.text,
+            if let pending, pending.old == submittedText,
                let range = Range(pending.range, in: pending.old),
                pending.old.replacingCharacters(in: range, with: pending.replacement) == textView.text {
                 parent.edit(pending.range, pending.replacement)
             } else { parent.change(textView.text) }
+            submittedText = textView.text
             pending = nil
         }
 
@@ -91,7 +111,7 @@ struct PronunciationTextEditor: UIViewRepresentable {
 final class ManuscriptTextView: UITextView, UIGestureRecognizerDelegate {
     var onReading: ((NSRange) -> Void)?
     var allowsEditing = true {
-        didSet { isEditable = allowsEditing && document?.hasCustomLayout != true }
+        didSet { if oldValue != allowsEditing { isEditable = allowsEditing } }
     }
     private var document: ScriptDocument?
     private var lastWidth: CGFloat = 0
@@ -135,7 +155,7 @@ final class ManuscriptTextView: UITextView, UIGestureRecognizerDelegate {
     func refresh(_ document: ScriptDocument) {
         let changed = self.document?.text != document.text || self.document?.pronunciations != document.pronunciations
         self.document = document
-        isEditable = allowsEditing && !document.hasCustomLayout
+        if isEditable != allowsEditing { isEditable = allowsEditing }
         guard !updating else { return }
         guard markedTextRange == nil else { deferredRefresh = true; return }
         let width = bounds.width

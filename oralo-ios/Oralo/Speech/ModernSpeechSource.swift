@@ -5,7 +5,10 @@ import Speech
 @available(iOS 26, *)
 @MainActor
 final class ModernSpeechSource: SpeechSource {
-    private let microphone = MicrophoneCapture()
+    private let microphone: MicrophoneCapture
+    init(sessionPolicy: MicrophoneCapture.SessionPolicy = .exclusive) {
+        microphone = MicrophoneCapture(sessionPolicy: sessionPolicy)
+    }
     private var download: AssetInstallationRequest?
     private var input: AsyncThrowingStream<AnalyzerInput, Error>.Continuation?
     private var capturedSeconds: TimeInterval = 0
@@ -85,7 +88,7 @@ final class ModernSpeechSource: SpeechSource {
                       event: @escaping @MainActor @Sendable (SpeechEvent) -> Void) async throws {
         for try await chunk in chunks {
             try Task.checkCancellation()
-            event(.level(chunk.level))
+            event(.level(chunk.level, duration: Double(chunk.samples.count) / chunk.sampleRate))
             if let buffer = try converter.convert(chunk) {
                 capturedSeconds += Double(buffer.frameLength) / buffer.format.sampleRate
                 if case .dropped = output.yield(AnalyzerInput(buffer: buffer)) {
@@ -109,6 +112,16 @@ final class ModernSpeechSource: SpeechSource {
                 event(.transcript(id: requestID, text: text,
                                   isFinal: result.isFinal && result.range.end.seconds >= window.latestEnd,
                                   deliveryDelay: delay))
+            }
+            if result.isFinal {
+                let spans = result.text.runs.compactMap { run -> FinalSpeechSpan? in
+                    guard let range = run.audioTimeRange else { return nil }
+                    return FinalSpeechSpan(text: String(result.text[run.range].characters),
+                                           start: range.start.seconds, end: range.end.seconds)
+                }
+                event(.finalized(id: requestID, spans: spans.isEmpty
+                    ? [FinalSpeechSpan(text: String(result.text.characters), start: result.range.start.seconds, end: result.range.end.seconds)]
+                    : spans))
             }
         }
     }

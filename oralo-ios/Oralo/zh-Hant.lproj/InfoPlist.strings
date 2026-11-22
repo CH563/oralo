@@ -1,0 +1,2 @@
+"NSMicrophoneUsageDescription" = "Oralo 在你講話時使用麥克風跟隨講稿。音訊在裝置端處理，不儲存錄音。";
+"NSSpeechRecognitionUsageDescription" = "Oralo 使用裝置端語音辨識定位講稿位置。不開啟也可以手動切句。";

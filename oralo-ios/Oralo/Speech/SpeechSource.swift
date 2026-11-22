@@ -1,10 +1,12 @@
 import Foundation
+import OraloCore
 
 nonisolated enum SpeechEvent: Sendable {
     case preparing(String)
     case started(id: UUID, engine: String)
     case transcript(id: UUID, text: String, isFinal: Bool, deliveryDelay: TimeInterval?)
-    case level(Float)
+    case level(Float, duration: TimeInterval = 0)
+    case finalized(id: UUID, spans: [FinalSpeechSpan])
     case restarting(String)
 }
 

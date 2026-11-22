@@ -4,10 +4,11 @@ final class PrototypeUITests: XCTestCase {
     @MainActor
     func testPresentationHidesControlsAndFirstTapOnlyReveals() throws {
         let app = XCUIApplication()
-        app.launchArguments = ["--ui-prototype"]
+        app.launchArguments = ["--ui-prototype", "-AppleLanguages", "(en)", "-AppleLocale", "en_US"]
         app.launch()
         XCTAssertTrue(app.buttons["enter-presentation"].waitForExistence(timeout: 10))
-        app.buttons["enter-presentation"].tap()
+        app.buttons["enter-presentation"].coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        XCTAssertTrue(app.buttons["show-controls-waveform"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons["start-stop"].exists)
         XCTAssertFalse(app.buttons["setup"].exists)
         XCTAssertTrue(app.buttons["show-controls-waveform"].exists)
@@ -55,14 +56,15 @@ final class PrototypeUITests: XCTestCase {
     @MainActor
     private func verifyReadingAnchor(largeType: Bool, annotated: Bool = false) throws {
         let app = XCUIApplication()
-        app.launchArguments = ["--ui-reading-replay"]
+        app.launchArguments = ["--ui-reading-replay", "-AppleLanguages", "(en)", "-AppleLocale", "en_US"]
         if annotated { app.launchArguments.append("--ui-pronunciation-replay") }
         if largeType {
             app.launchArguments += ["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]
         }
         app.launch()
         XCTAssertTrue(app.buttons["enter-presentation"].waitForExistence(timeout: 10))
-        app.buttons["enter-presentation"].tap()
+        app.buttons["enter-presentation"].coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        XCTAssertTrue(app.buttons["show-controls-waveform"].waitForExistence(timeout: 5))
         let line = app.staticTexts["reading-line"]
         let viewport = app.descendants(matching: .any)["script-scroll"].firstMatch
         XCTAssertTrue(line.waitForExistence(timeout: 5))
@@ -80,24 +82,24 @@ final class PrototypeUITests: XCTestCase {
             expectation(for: settled, evaluatedWith: line)
             waitForExpectations(timeout: 3)
         }
-        assertAnchor("cue:0 characters:0")
-        assertAnchor("cue:0 characters:6")
-        assertAnchor("cue:0 characters:36")
+        assertAnchor("Sentence 1, 0 characters read")
+        assertAnchor("Sentence 1, 6 characters read")
+        assertAnchor("Sentence 1, 36 characters read")
         if largeType { XCTAssertGreaterThan(line.frame.height, 70, "The test must actually use enlarged text.") }
         let screenshot = XCTAttachment(screenshot: app.screenshot())
         screenshot.name = "Actual wrapped reading line at upper third"
         screenshot.lifetime = .keepAlways
         add(screenshot)
         // Skip the remaining first-cue update, then check the last cue and a backward rejoin.
-        assertAnchor("cue:2 characters:14")
-        assertAnchor("cue:0 characters:12")
+        assertAnchor("Sentence 3, 14 characters read")
+        assertAnchor("Sentence 1, 12 characters read")
         XCTAssertFalse(app.buttons["start-stop"].exists)
     }
 
     @MainActor
     func testManualRecoveryAndRedactedReportWithoutMicrophone() throws {
         let app = XCUIApplication()
-        app.launchArguments = ["--ui-prototype"]
+        app.launchArguments = ["--ui-prototype", "-AppleLanguages", "(en)", "-AppleLocale", "en_US"]
         app.launch()
         XCTAssertTrue(app.buttons["start-stop"].waitForExistence(timeout: 10))
         XCTAssertEqual(app.staticTexts["cue-position"].label, "1 / 12")
@@ -123,7 +125,7 @@ final class PrototypeUITests: XCTestCase {
     @MainActor
     func testScriptSetupAppliesSampleAndResetsPosition() throws {
         let app = XCUIApplication()
-        app.launchArguments = ["--ui-prototype"]
+        app.launchArguments = ["--ui-prototype", "-AppleLanguages", "(en)", "-AppleLocale", "en_US"]
         app.launch()
         XCTAssertTrue(app.buttons["cue-1"].waitForExistence(timeout: 10))
         app.buttons["cue-1"].tap()

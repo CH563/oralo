@@ -97,7 +97,9 @@ final class ReaderTextView: UITextView, UITextViewDelegate {
             if let oldIndex = previous?.recognizedIndex, cueElements.indices.contains(oldIndex) {
                 cueElements[oldIndex].accessibilityTraits = .button
             }
-            cueElements[next.recognizedIndex].accessibilityTraits = [.button, .selected]
+            if cueElements.indices.contains(next.recognizedIndex) {
+                cueElements[next.recognizedIndex].accessibilityTraits = [.button, .selected]
+            }
         }
     }
 
@@ -133,14 +135,14 @@ final class ReaderTextView: UITextView, UITextViewDelegate {
         paintedRanges = []
         cueElements = configuration.cues.enumerated().map { index, cue in
             let element = ReaderCueElement(reader: self, index: index)
-            element.accessibilityLabel = "Cue \(index + 1). \(cue.text)"
-            element.accessibilityHint = "Continue from this sentence"
+            element.accessibilityLabel = String(format: AppCopy.text("Sentence %lld. %@"), index + 1, cue.text)
+            element.accessibilityHint = AppCopy.text("Continue from this sentence")
             if let readings = configuration.pronunciations[cue.id], !readings.isEmpty {
-                element.accessibilityHint = "Continue from this sentence. " + readings.map { "\($0.term): \($0.reading)" }.joined(separator: "; ")
+                element.accessibilityHint = AppCopy.text("Continue from this sentence.") + " " + readings.map { "\($0.term): \($0.reading)" }.joined(separator: "; ")
                 element.accessibilityValue = readings.map { "\($0.term): \($0.reading)" }.joined(separator: "; ")
             }
             element.accessibilityIdentifier = "cue-\(index)"
-            element.accessibilityTraits = .button
+            element.accessibilityTraits = index == configuration.recognizedIndex ? [.button, .selected] : .button
             return element
         }
         lastAlignedLine = nil
@@ -221,6 +223,7 @@ final class ReaderTextView: UITextView, UITextViewDelegate {
         let sizeChanged = bounds.size != lastSize
         guard sizeChanged || pendingAlignment else { return }
         lastSize = bounds.size
+        if sizeChanged { browsing = false } // Rotation returns to the same cursor, without touching speech state.
         pendingAlignment = false
         let immediate = sizeChanged || immediateAlignment
         immediateAlignment = false
@@ -246,9 +249,14 @@ final class ReaderTextView: UITextView, UITextViewDelegate {
                                            width: character.width, height: lineRect.height)
         }
         let characterRange = layoutManager.characterRange(forGlyphRange: glyphRange, actualGlyphRange: nil)
-        focusBand.accessibilityLabel = "Reading line. " + (textStorage.string as NSString).substring(with: characterRange)
-        focusBand.accessibilityValue = "cue:\(configuration.position.cueIndex) characters:\(configuration.position.characterCount)"
-        let readingY = bounds.height * (configuration.presenting ? 0.34 : 0.25)
+        focusBand.accessibilityLabel = AppCopy.text("Reading line.") + " " + (textStorage.string as NSString).substring(with: characterRange)
+        focusBand.accessibilityValue = String(format: AppCopy.text("Sentence %lld, %lld characters read"), configuration.position.cueIndex + 1, configuration.position.characterCount)
+        let desiredY = bounds.height * (configuration.presenting ? 0.34 : 0.25)
+        // Keep the actual body line below floating chrome, even on a short landscape
+        // viewport with large text. Controls appearing never changes this anchor.
+        let rubyClearance: CGFloat = configuration.pronunciations.isEmpty ? 0 : configuration.fontSize * 0.38
+        let readingY = configuration.presenting
+            ? max(desiredY, min(bounds.height * 0.55, 76 + rubyClearance + lineRect.height / 2)) : desiredY
         // Insets permit the very first and very last lines to reach the same focal position.
         let insets = UIEdgeInsets(top: max(0, readingY - lineRect.height / 2), left: 0,
                                  bottom: max(0, bounds.height - readingY - lineRect.height / 2), right: 0)
