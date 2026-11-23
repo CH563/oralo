@@ -8,16 +8,27 @@
   <a href="README.md">English</a> · 简体中文<br>
   <a href="https://oralo.fun/">官网</a> ·
   <a href="https://apps.apple.com/app/id6835449605">App Store</a> ·
+  <a href="https://github.com/CH563/oralo/releases/tag/macos-v0.1.0-beta.12">Mac 预览版</a> ·
   <a href="docs/TECHNICAL.zh-CN.md">技术说明</a> ·
   <a href="docs/PRIVACY.zh-CN.md">隐私说明</a>
 </p>
-<p align="center">iPhone 与 iPad · iOS 18 及以上 · Swift / SwiftUI · MIT 开源</p>
+<p align="center">iPhone 与 iPad · iOS 18+ · Mac 预览版 · macOS 15+ · MIT 开源</p>
 
 接着讲是一款面向现场分享、工作汇报和视频创作的开源提词器。它跟随你的语速，在停顿或自由发挥时保留位置，帮助你重新接回原稿。提前准备难读的字词，开讲时把注意力留给听众。
 
 <p align="center">
   <a href="docs/assets/screenshots-zh-CN.webp"><img src="docs/assets/screenshots-zh-CN.webp" width="1200" alt="接着讲商店截图：语音跟随、自由发挥后接稿、拼音和音标、画中画小窗及镜像提词"></a>
 </p>
+
+## macOS 预览版
+
+[下载 Oralo Mac 0.1.0 (12)](https://github.com/CH563/oralo/releases/tag/macos-v0.1.0-beta.12) · [Mac 源码与构建指南](oralo-macos/README.md)
+
+原生 Mac 版包含备稿、拼音与音标、排练复盘，以及靠近摄像头的悬浮提词。支持四角定位、调整大小、背景透明度、行距和高亮色，并记住阅读偏好。Mac 复用 iOS 的本地跟随与接稿核心，悬浮窗使用原生 AppKit 窗口实现。
+
+DMG 包含 **Apple 芯片与 Intel 通用版**，最低 **macOS 15**。这是**使用临时签名、尚未公证的测试预览版**。拖入「应用程序」后启动；首次打开若被系统阻止，请在确认下载来源可信后，按 [Apple 的单应用打开指引](https://support.apple.com/102445)使用「仍要打开」。构建与安装包完整性检查已通过，新流程、Intel 和较早系统的表现仍待[人工验收](oralo-macos/MANUAL-ACCEPTANCE.md)。设备端语音能力取决于机器和已安装的语言模型。
+
+视频会议中请选择具体的 PPT 或浏览器窗口共享，并检查观众实际看到的预览。共享整个桌面或镜像投屏可能包含提词窗，透明度不会让窗口自动从共享画面中消失。顶部灯泡可打开使用教程。
 
 ## 按你的节奏讲
 
@@ -26,7 +37,7 @@
 | **语音跟随** | 设备端识别、逐字高亮，让当前阅读行保持在屏幕中上区域。 |
 | **自由发挥后接稿** | 根据新说出的内容寻找原稿中的明确位置；匹配不确定时停住，也可以点按原句接回。 |
 | **中文拼音与英文音标** | 注音显示在原文字词上方，备稿时可试听英文参考发音。 |
-| **跨 App 小窗** | 使用系统画中画，在其他 App 上方查看讲稿，可选择语音跟随或定速滚动。 |
+| **跨 App 小窗** | iOS 使用系统画中画，Mac 使用原生悬浮窗；均可选择语音跟随或定速滚动。 |
 | **镜像提词** | 正文和注音左右镜像，搭配镜面提词设备使用；操作按钮保持正常。 |
 | **从备稿到复盘** | 纯文本导入、编辑保存、准备检查、排练、复盘，再回到原句修改。 |
 | **预估演讲时长** | 显示稿件字数和预计用时，可调整估算语速；快速示例匹配 App 语言。 |
@@ -45,6 +56,8 @@
 查看[完整数据处理说明](docs/PRIVACY.zh-CN.md)，也可以直接阅读[语音处理](oralo-ios/Oralo/Speech/)和[稿件存储](oralo-ios/Packages/OraloCore/Sources/OraloCore/ScriptLibraryRepository.swift)源码。
 
 ## 自行构建
+
+### iPhone 与 iPad
 
 已验证工具链为 **Xcode 27.1**，需要配套 iOS SDK 与模拟器运行时；最低部署系统为 **iOS 18.0**。`OraloCore` 使用 Swift tools 6.2 或以上。工程只依赖 Apple 系统框架和仓库内的本地 Swift 包，**无需 API Key 或后端配置**。
 
@@ -65,6 +78,19 @@ swift test --package-path oralo-ios/Packages/OraloCore
 
 工程结构与测试方式见 [iOS 开发指南](oralo-ios/README.md)。
 
+### macOS
+
+打开 `oralo-macos/OraloMac.xcodeproj`，选择 **OraloMac → My Mac** 后运行。默认使用本地临时签名，无需开发者账号、API Key 或服务器。请保留两个平台的目录，Mac 工程引用 `oralo-ios/Packages/OraloCore` 作为本地依赖。此次预览版使用 Xcode 27.1 构建。
+
+```sh
+xcodebuild -project oralo-macos/OraloMac.xcodeproj \
+  -scheme OraloMac -configuration Release \
+  -destination 'generic/platform=macOS' \
+  ONLY_ACTIVE_ARCH=NO 'ARCHS=arm64 x86_64' build
+```
+
+可复现的 DMG 打包方式，以及正式发布所需的 Developer ID 签名、公证要求，见 [Mac 分发说明](oralo-macos/DISTRIBUTION.md)。
+
 ## 跟随是怎样实现的
 
 Oralo 将设备端语音识别与本地文本对齐结合起来，并把“识别确认的位置”和“短距离的显示预测”分开处理。显示预测用于缓解识别回调延迟，不会把估算位置当成已经读过的内容。小窗复用同一套语音跟随流程。
@@ -73,7 +99,7 @@ Oralo 将设备端语音识别与本地文本对齐结合起来，并把“识�
 
 ## 反馈与参与
 
-可通过 [GitHub Issues](https://github.com/CH563/oralo/issues)报告可复现的问题或提出建议，也可查看[支持页面](https://oralo.fun/support/?lang=zh)。请提供 iOS 版本、设备类型与复现步骤，使用示例文本代替私密讲稿，分享诊断信息前先检查内容。
+可通过 [GitHub Issues](https://github.com/CH563/oralo/issues)报告可复现的问题或提出建议，也可查看[支持页面](https://oralo.fun/support/?lang=zh)。请提供 iOS 或 macOS 版本、设备或芯片类型与复现步骤，使用示例文本代替私密讲稿，分享诊断信息前先检查内容。
 
 修改语音跟随时，请补充或更新有针对性的核心测试，并说明真机验证情况。模拟器中的固定语音样例不能证明真实收音延迟或相机兼容性。
 

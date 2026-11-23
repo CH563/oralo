@@ -5,6 +5,7 @@
 !/README.md
 !/README.zh-CN.md
 !/oralo-ios/
+!/oralo-macos/
 
 # Public documentation and optimized images
 !/docs/
@@ -29,6 +30,9 @@ xcuserdata/
 *.xcresult
 *.hmap
 *.ipa
+*.dmg
+*.app/
+*.xcarchive/
 *.dSYM
 *.dSYM.zip
 

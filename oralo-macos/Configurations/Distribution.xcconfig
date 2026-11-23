@@ -1,0 +1,8 @@
+// Opt-in only. The local project keeps com.ch563.oralo.mac.dev and ad-hoc signing.
+// Supply ORALO_TEAM_ID and ORALO_BUNDLE_ID through archive_distribution.sh.
+DEVELOPMENT_TEAM = $(ORALO_TEAM_ID)
+PRODUCT_BUNDLE_IDENTIFIER = $(ORALO_BUNDLE_ID)
+CODE_SIGN_STYLE = Automatic
+ENABLE_APP_SANDBOX = YES
+ENABLE_HARDENED_RUNTIME = YES
+MACOSX_DEPLOYMENT_TARGET = 15.0

@@ -2,7 +2,7 @@
 
 [English](TECHNICAL.md) · [简体中文](TECHNICAL.zh-CN.md) · [Project](../README.md)
 
-This guide describes the implementation shipped in version 1.0, build 14. The app uses Apple speech models for on-device recognition and deterministic local alignment for script positioning. It does not send the script to an LLM or ask a server to decide where to scroll.
+The iOS sections describe version 1.0, build 14. The macOS section covers preview 0.1.0 (12). The app uses Apple speech models for on-device recognition and deterministic local alignment for script positioning. It does not send the script to an LLM or ask a server to decide where to scroll.
 
 ## One pipeline, two readers
 
@@ -88,6 +88,16 @@ Voice capture starts while Oralo is foregrounded. The app does not fight another
 Returning to Oralo pauses and closes the floating window. Saved checkpoints contain a script identity, revision and position; reopening does not automatically start listening. Deleting the script clears its checkpoint and releases its in-memory rendering/session state.
 
 Build 14 was accepted in physical-device testing for Camera recording, recorded speech, voice following and returning after ad-libs. This is not a guarantee for every camera, livestream or call app. iOS decides PiP availability, placement and size limits, and another app can interrupt microphone access or end PiP. The current renderer fills an opaque background; it does not provide transparent video over the underlying app.
+
+## Native macOS readers
+
+The Mac project references the same `OraloCore` package; it does not fork the matcher or replace iOS build 14's recovery logic. [`MacSpeechSession`](../oralo-macos/OraloMac/Speech/MacSpeechSession.swift) coordinates a single local capture session. On macOS 26+, the modern adapter uses `SpeechAnalyzer`; the explicit compatibility path requires on-device `SFSpeechRecognizer` support. Missing local recognition holds the position rather than silently enabling a server recognizer.
+
+[`MacReader`](../oralo-macos/OraloMac/Reader/MacReader.swift) drives presentation and floating rendering with the existing bounded display lead. Changing the floating window's frame or appearance does not start a second recognizer. Preparation and prompting preserve pronunciation anchors in the original text.
+
+[`PresentationWindows`](../oralo-macos/OraloMac/Windows/PresentationWindows.swift) uses public AppKit nonactivating `NSPanel` windows. Near-camera placement, four corners and display-boundary recovery are implemented in [`FloatingGeometry`](../oralo-macos/OraloMac/Windows/FloatingGeometry.swift). Resizing and background transparency affect the window's presentation; text remains opaque. Reading settings and the floating frame are stored locally through [`MacPreferences`](../oralo-macos/OraloMac/App/MacPreferences.swift). The Mac does not use AVKit PiP or create a video call to display the prompt.
+
+Nonactivating panels reduce focus disruption, but do not guarantee that every meeting or screen-sharing configuration excludes the prompt. Share a specific presentation/browser window and inspect the actual shared preview. The current Mac candidate has build and package checks; see [validation boundaries](../oralo-macos/VALIDATION.md) and [manual acceptance](../oralo-macos/MANUAL-ACCEPTANCE.md) for runtime checks still pending.
 
 ## Pronunciation and storage
 

@@ -8,16 +8,27 @@
   English · <a href="README.zh-CN.md">简体中文</a><br>
   <a href="https://oralo.fun/">Website</a> ·
   <a href="https://apps.apple.com/app/id6835449605">App Store</a> ·
+  <a href="https://github.com/CH563/oralo/releases/tag/macos-v0.1.0-beta.12">Mac preview</a> ·
   <a href="docs/TECHNICAL.md">How it works</a> ·
   <a href="docs/PRIVACY.md">Privacy</a>
 </p>
-<p align="center">iPhone &amp; iPad · iOS 18+ · Swift / SwiftUI · MIT</p>
+<p align="center">iPhone &amp; iPad · iOS 18+ · Mac preview · macOS 15+ · MIT</p>
 
 Oralo is an open-source teleprompter for presentations, reports and video creation. It follows your speech, holds your place when you pause or go off script, and helps you pick up the original text again. Prepare difficult words before you speak, then keep your attention on your audience.
 
 <p align="center">
   <a href="docs/assets/screenshots-en.webp"><img src="docs/assets/screenshots-en.webp" width="1200" alt="Oralo App Store screenshots showing voice following, returning to a script, pronunciation hints, Picture in Picture and mirror mode"></a>
 </p>
+
+## macOS preview
+
+[Download Oralo for Mac 0.1.0 (12)](https://github.com/CH563/oralo/releases/tag/macos-v0.1.0-beta.12) · [Mac source and build guide](oralo-macos/README.md)
+
+The native Mac preview brings script preparation, pinyin/IPA, rehearsal and review to the desktop. A floating prompt stays near your camera, with corner placement, resizing, background transparency, line spacing and highlight colors. It shares the existing local follow/recovery core with iOS; the Mac uses AppKit floating panels rather than iOS Picture in Picture. Settings are remembered on your Mac.
+
+The DMG contains a universal **Apple silicon + Intel** build for **macOS 15+**. This is an **ad-hoc signed, unnotarized test release**, not a production release. Drag Oralo into Applications. If macOS blocks the first launch, only after confirming the download's source, follow [Apple's per-app Open Anyway instructions](https://support.apple.com/102445). Build and package-integrity checks passed; new workflows, Intel and older-system behavior await [manual acceptance](oralo-macos/MANUAL-ACCEPTANCE.md). On-device speech availability depends on the Mac and installed language models.
+
+In meetings, share the specific slides or browser window and check the actual audience preview. Sharing the entire desktop or mirroring a display can include the prompt; transparency does not exclude a window from capture. The toolbar lightbulb opens the in-app guide.
 
 ## Made for the way you speak
 
@@ -26,7 +37,7 @@ Oralo is an open-source teleprompter for presentations, reports and video creati
 | **Follow your voice** | On-device speech recognition, character-level highlighting and a reading line held near the upper middle of the screen. |
 | **Go off script, then return** | Fresh speech can find a distinctive passage elsewhere in your script. Uncertain matches hold position; tap a passage to take control. |
 | **Prepare tricky words** | Add Chinese pinyin or English IPA above the original text. Listen to an English reference pronunciation while preparing. |
-| **Keep your script in view** | System Picture in Picture offers voice following or fixed-pace scrolling while you use another app. |
+| **Keep your script in view** | iOS uses system Picture in Picture; macOS uses a native floating window. Both offer voice-following and fixed-pace modes. |
 | **Read through a mirror** | Mirror the manuscript and pronunciation hints for teleprompter hardware; controls remain readable. |
 | **Get ready and rehearse** | Import plain text, edit and save, check readiness, rehearse, review observations and return to the original sentence. |
 | **Know the size of your talk** | Script counts and adjustable speaking-time estimates, plus quick-start samples in the app's language. |
@@ -45,6 +56,8 @@ System models and voices may need downloading. Files chosen from a cloud provide
 Read the [data-handling details](docs/PRIVACY.md) or inspect the [speech](oralo-ios/Oralo/Speech/) and [storage](oralo-ios/Packages/OraloCore/Sources/OraloCore/ScriptLibraryRepository.swift) implementations.
 
 ## Build it yourself
+
+### iPhone and iPad
 
 The verified toolchain is **Xcode 27.1**, with its iOS SDK and a simulator runtime. The deployment target is **iOS 18.0**. `OraloCore` uses Swift tools 6.2 or later. The project uses Apple frameworks and an included local Swift package; **no API key or backend setup is needed**.
 
@@ -65,6 +78,19 @@ swift test --package-path oralo-ios/Packages/OraloCore
 
 See the [iOS development guide](oralo-ios/README.md) for the source map and testing workflow.
 
+### macOS
+
+Open `oralo-macos/OraloMac.xcodeproj`, choose **OraloMac → My Mac**, and run. The default is local ad-hoc signing; no developer account, API key or server is required. Keep both platform folders: the Mac references `oralo-ios/Packages/OraloCore` as a local package. Xcode 27.1 was used for this preview.
+
+```sh
+xcodebuild -project oralo-macos/OraloMac.xcodeproj \
+  -scheme OraloMac -configuration Release \
+  -destination 'generic/platform=macOS' \
+  ONLY_ACTIVE_ARCH=NO 'ARCHS=arm64 x86_64' build
+```
+
+See [Mac packaging](oralo-macos/DISTRIBUTION.md) for the reproducible DMG workflow and the separate Developer ID/notarization requirements for a production release.
+
 ## How it works
 
 Oralo combines on-device recognition with local text alignment. A confirmed script position is kept separate from a small, bounded visual prediction, helping the highlight feel responsive without treating an estimate as recognized speech. The PiP reader reuses the same speech-following pipeline.
@@ -73,7 +99,7 @@ The [technical guide](docs/TECHNICAL.md) explains matching and off-script recove
 
 ## Feedback and contributions
 
-Use [GitHub Issues](https://github.com/CH563/oralo/issues) for reproducible problems or suggestions, and the [support page](https://oralo.fun/support/) for help. Include the iOS version, device type and steps to reproduce. Use sample scripts instead of private manuscripts; review diagnostics before sharing them.
+Use [GitHub Issues](https://github.com/CH563/oralo/issues) for reproducible problems or suggestions, and the [support page](https://oralo.fun/support/) for help. Include the iOS or macOS version, device/chip type and steps to reproduce. Use sample scripts instead of private manuscripts; review diagnostics before sharing them.
 
 For changes to speech following, add or update a focused core test and describe the physical-device checks. Simulator fixtures do not establish real microphone latency or camera compatibility.
 

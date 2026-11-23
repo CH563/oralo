@@ -1,0 +1,1154 @@
+// !$*UTF8*$!
+{
+	"archiveVersion" = "1";
+	"classes" = {};
+	"objectVersion" = "56";
+	"objects" = {
+		"085827B649F7606E862BCEEB" = {
+			"isa" = "XCLocalSwiftPackageReference";
+			"relativePath" = "../oralo-ios/Packages/OraloCore";
+		};
+		"312780B47066090A95D638DE" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "OraloMac/App/MacPreferences.swift";
+			"sourceTree" = "<group>";
+		};
+		"BA214A46BFDBFBEB8C1D341D" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "312780B47066090A95D638DE";
+		};
+		"B28053EF77608C25F6B56123" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "OraloMac/App/MacWelcomeView.swift";
+			"sourceTree" = "<group>";
+		};
+		"2C233AEE9805CB021AAD005E" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "B28053EF77608C25F6B56123";
+		};
+		"C91137BF026F2F66B72E4C21" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "OraloMac/App/OraloMacApp.swift";
+			"sourceTree" = "<group>";
+		};
+		"1AF40E751E1EDA90222285F6" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "C91137BF026F2F66B72E4C21";
+		};
+		"71916E1B77282FB35D6DFC46" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "OraloMac/Design/HighlightColor.swift";
+			"sourceTree" = "<group>";
+		};
+		"DE0B891A548085F9ED19A92C" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "71916E1B77282FB35D6DFC46";
+		};
+		"F0097FD86FB6F53A92314D14" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "OraloMac/Design/MacErrorCopy.swift";
+			"sourceTree" = "<group>";
+		};
+		"41766FBE38EFAAA9855F920E" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "F0097FD86FB6F53A92314D14";
+		};
+		"F50C5D7555DA65B2CB91D1BB" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "OraloMac/Design/MacStyle.swift";
+			"sourceTree" = "<group>";
+		};
+		"51742071BEF244B984E49C19" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "F50C5D7555DA65B2CB91D1BB";
+		};
+		"028C845DC644A83FEAA1F0E1" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "OraloMac/Design/ManuscriptAlignment.swift";
+			"sourceTree" = "<group>";
+		};
+		"75BB4A4EE52A5A2DE2E141D4" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "028C845DC644A83FEAA1F0E1";
+		};
+		"0D982387C1DCF900CF1DAD8B" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "OraloMac/Help/UsageGuideView.swift";
+			"sourceTree" = "<group>";
+		};
+		"BC94A83596C852EA2F0C64B8" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "0D982387C1DCF900CF1DAD8B";
+		};
+		"0F6596777BE157A78491E9EB" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "OraloMac/Library/EditorPane.swift";
+			"sourceTree" = "<group>";
+		};
+		"3EBE21A726F924681E753BEA" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "0F6596777BE157A78491E9EB";
+		};
+		"5A5271036DF428300DDBD4EF" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "OraloMac/Library/EditorToolsView.swift";
+			"sourceTree" = "<group>";
+		};
+		"3590167B688C7F42D3FFC064" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "5A5271036DF428300DDBD4EF";
+		};
+		"A554289EDDD7835C5F90C9FF" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "OraloMac/Library/MacLibrary.swift";
+			"sourceTree" = "<group>";
+		};
+		"28F594FB5036892D68EDE920" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "A554289EDDD7835C5F90C9FF";
+		};
+		"F711A306284FF3A7E57F8B24" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "OraloMac/Library/ScriptEditorModel.swift";
+			"sourceTree" = "<group>";
+		};
+		"A5DEC3E9BC4A893CDE9BCB29" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "F711A306284FF3A7E57F8B24";
+		};
+		"ED65F58428567144C4A5581E" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "OraloMac/Library/ScriptLibraryView.swift";
+			"sourceTree" = "<group>";
+		};
+		"048A2AFF976122AF449708AB" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "ED65F58428567144C4A5581E";
+		};
+		"198BE901D26016A89B8F5E27" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "OraloMac/Library/WorkspaceView.swift";
+			"sourceTree" = "<group>";
+		};
+		"0B926E014BEC238B1E2AF324" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "198BE901D26016A89B8F5E27";
+		};
+		"E53A53BE365CF0CED6452E54" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "OraloMac/Pronunciation/ManuscriptEditor.swift";
+			"sourceTree" = "<group>";
+		};
+		"A8CCD4879C13D813A19A4B0F" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "E53A53BE365CF0CED6452E54";
+		};
+		"D6547847CFEFCCE42120FDB6" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "OraloMac/Pronunciation/PronunciationLayoutManager.swift";
+			"sourceTree" = "<group>";
+		};
+		"84E57626ADD1F84E96C0B77E" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "D6547847CFEFCCE42120FDB6";
+		};
+		"6D3B1AABCB0A0A4442E70E86" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "OraloMac/Pronunciation/PronunciationLookup.swift";
+			"sourceTree" = "<group>";
+		};
+		"6B4B7AB259E28F7C633FC927" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "6D3B1AABCB0A0A4442E70E86";
+		};
+		"A432B608364D47BFAE7C36F0" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "OraloMac/Pronunciation/ReadingSheet.swift";
+			"sourceTree" = "<group>";
+		};
+		"3F3F45E09254961D742FD7F4" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "A432B608364D47BFAE7C36F0";
+		};
+		"B8E94C873560C4D63EF7B262" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "OraloMac/Reader/MacReader.swift";
+			"sourceTree" = "<group>";
+		};
+		"FEC4A5047CFA88F2F31E3445" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "B8E94C873560C4D63EF7B262";
+		};
+		"057E5BD38277CF4AC8FAC35B" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "OraloMac/Reader/PresentationView.swift";
+			"sourceTree" = "<group>";
+		};
+		"2CABF3D5C9B7273371C9377E" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "057E5BD38277CF4AC8FAC35B";
+		};
+		"385226CA9DB4A269C1B16950" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "OraloMac/Reader/PromptControls.swift";
+			"sourceTree" = "<group>";
+		};
+		"B2C93D577F3F708084447A0D" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "385226CA9DB4A269C1B16950";
+		};
+		"6C0B4BA33D7958293A9CF495" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "OraloMac/Rehearsal/ReadinessView.swift";
+			"sourceTree" = "<group>";
+		};
+		"5AC8D10AAA9C643E683377B5" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "6C0B4BA33D7958293A9CF495";
+		};
+		"A2218ACFCDDE30A805B72F5C" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "OraloMac/Rehearsal/RehearsalHistoryView.swift";
+			"sourceTree" = "<group>";
+		};
+		"1AC8C90AEE1E97699CF9EFC2" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "A2218ACFCDDE30A805B72F5C";
+		};
+		"3C8072FFC38500CF87602A59" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "OraloMac/Rehearsal/RehearsalStore.swift";
+			"sourceTree" = "<group>";
+		};
+		"B405400AE73F7EDCD9359E36" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "3C8072FFC38500CF87602A59";
+		};
+		"042BE3F9F207D86B2F2BB701" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "text";
+			"path" = "OraloMac/Resources/CMUDict-IPA-LICENSE.txt";
+			"sourceTree" = "<group>";
+		};
+		"104EF65796AD0F50C4039CB5" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "042BE3F9F207D86B2F2BB701";
+		};
+		"584A0EBE6A329CC7F5B1C9FC" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "text";
+			"path" = "OraloMac/Resources/CMUDict-LICENSE.txt";
+			"sourceTree" = "<group>";
+		};
+		"3A8D7E22A3DE0E23B0D6A3FC" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "584A0EBE6A329CC7F5B1C9FC";
+		};
+		"42B1E61D5A623EC1E4267C8A" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "text";
+			"path" = "OraloMac/Resources/EnglishIPA.txt";
+			"sourceTree" = "<group>";
+		};
+		"9697BB2312F0AD4E0E6EA624" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "42B1E61D5A623EC1E4267C8A";
+		};
+		"9EAAD3C51FF52CF81C5EF0C7" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "text";
+			"path" = "OraloMac/Resources/IPA-Dict-LICENSE.txt";
+			"sourceTree" = "<group>";
+		};
+		"004FD50D24D1D161BF3311FD" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "9EAAD3C51FF52CF81C5EF0C7";
+		};
+		"AFC8F37E0C6225E627CDA956" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "text.json.xcstrings";
+			"path" = "OraloMac/Resources/InfoPlist.xcstrings";
+			"sourceTree" = "<group>";
+		};
+		"3F6B6035B9D99FF2A06EC87E" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "AFC8F37E0C6225E627CDA956";
+		};
+		"97DDA4CDF0515DF4A3985A30" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "image.pdf";
+			"path" = "OraloMac/Resources/MenuBarMark.pdf";
+			"sourceTree" = "<group>";
+		};
+		"A65B7999161DE379B0E74F8C" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "97DDA4CDF0515DF4A3985A30";
+		};
+		"0099287EFE2F015202D68DC4" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "text";
+			"path" = "OraloMac/Resources/Oralo-MIT-LICENSE.txt";
+			"sourceTree" = "<group>";
+		};
+		"DD1F0D029D0F16271A9F5636" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "0099287EFE2F015202D68DC4";
+		};
+		"A3E581CDF6C92A835AE7D5F8" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "image.icns";
+			"path" = "OraloMac/Resources/Oralo.icns";
+			"sourceTree" = "<group>";
+		};
+		"80579A11CD685F59CD9441E1" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "A3E581CDF6C92A835AE7D5F8";
+		};
+		"C8AE4094B391EA41159A4748" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "text.xml";
+			"path" = "OraloMac/Resources/PrivacyInfo.xcprivacy";
+			"sourceTree" = "<group>";
+		};
+		"D14D194F94062D60AC6CE2F3" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "C8AE4094B391EA41159A4748";
+		};
+		"5674D83B8709669A164A9A36" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "text";
+			"path" = "OraloMac/Resources/Pronunciation-Credits.txt";
+			"sourceTree" = "<group>";
+		};
+		"3E230E0AE4E1B9815212CED1" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "5674D83B8709669A164A9A36";
+		};
+		"DD522A96D7AE2F660A7B6D1E" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "OraloMac/Settings/MacSettingsView.swift";
+			"sourceTree" = "<group>";
+		};
+		"7A92DA844981A1C866992BF5" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "DD522A96D7AE2F660A7B6D1E";
+		};
+		"0B76B837AFDE4DAFB5D64C43" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "OraloMac/Speech/LegacySpeechSource.swift";
+			"sourceTree" = "<group>";
+		};
+		"2A1E359A4BFFC49B3F108274" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "0B76B837AFDE4DAFB5D64C43";
+		};
+		"BCEE8840A70BC37925810519" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "OraloMac/Speech/MacSpeechSession.swift";
+			"sourceTree" = "<group>";
+		};
+		"572AF503FDB56BEA22DFBDD1" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "BCEE8840A70BC37925810519";
+		};
+		"CDAED3D943D5228E3700892E" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "OraloMac/Speech/MicrophoneCapture.swift";
+			"sourceTree" = "<group>";
+		};
+		"D27CD87132BDB554A8716B54" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "CDAED3D943D5228E3700892E";
+		};
+		"B6C0010E75C2EBE62B849CFC" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "OraloMac/Speech/ModernSpeechSource.swift";
+			"sourceTree" = "<group>";
+		};
+		"BBB0B3A6E3E31C92E592964E" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "B6C0010E75C2EBE62B849CFC";
+		};
+		"510A908978ED6C381A157B0E" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "OraloMac/Speech/SpeechSource.swift";
+			"sourceTree" = "<group>";
+		};
+		"C24ABBC6D904EBF9DFAF0246" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "510A908978ED6C381A157B0E";
+		};
+		"B45A023EEF8B929433AC0FED" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "OraloMac/Windows/FloatingGeometry.swift";
+			"sourceTree" = "<group>";
+		};
+		"48E8F3D49374162FAF348C7F" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "B45A023EEF8B929433AC0FED";
+		};
+		"16E960EFEC03D284B39FFB9E" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "OraloMac/Windows/FloatingHighlightPicker.swift";
+			"sourceTree" = "<group>";
+		};
+		"6B8AD47C77AFBE3AD3A39007" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "16E960EFEC03D284B39FFB9E";
+		};
+		"978437D84C5A172BB7B72179" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "OraloMac/Windows/FloatingPromptView.swift";
+			"sourceTree" = "<group>";
+		};
+		"A566B784E4F17F98A1161F72" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "978437D84C5A172BB7B72179";
+		};
+		"8DB2C139B278BFED53381F49" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "OraloMac/Windows/PresentationWindows.swift";
+			"sourceTree" = "<group>";
+		};
+		"1D154F0CE7A91DDC283A13F0" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "8DB2C139B278BFED53381F49";
+		};
+		"1FF79DF9FD9C3545AB9DA50D" = {
+			"isa" = "PBXGroup";
+			"children" = (
+				"312780B47066090A95D638DE",
+				"B28053EF77608C25F6B56123",
+				"C91137BF026F2F66B72E4C21",
+				"71916E1B77282FB35D6DFC46",
+				"F0097FD86FB6F53A92314D14",
+				"F50C5D7555DA65B2CB91D1BB",
+				"028C845DC644A83FEAA1F0E1",
+				"0D982387C1DCF900CF1DAD8B",
+				"0F6596777BE157A78491E9EB",
+				"5A5271036DF428300DDBD4EF",
+				"A554289EDDD7835C5F90C9FF",
+				"F711A306284FF3A7E57F8B24",
+				"ED65F58428567144C4A5581E",
+				"198BE901D26016A89B8F5E27",
+				"E53A53BE365CF0CED6452E54",
+				"D6547847CFEFCCE42120FDB6",
+				"6D3B1AABCB0A0A4442E70E86",
+				"A432B608364D47BFAE7C36F0",
+				"B8E94C873560C4D63EF7B262",
+				"057E5BD38277CF4AC8FAC35B",
+				"385226CA9DB4A269C1B16950",
+				"6C0B4BA33D7958293A9CF495",
+				"A2218ACFCDDE30A805B72F5C",
+				"3C8072FFC38500CF87602A59",
+				"042BE3F9F207D86B2F2BB701",
+				"584A0EBE6A329CC7F5B1C9FC",
+				"42B1E61D5A623EC1E4267C8A",
+				"9EAAD3C51FF52CF81C5EF0C7",
+				"AFC8F37E0C6225E627CDA956",
+				"97DDA4CDF0515DF4A3985A30",
+				"0099287EFE2F015202D68DC4",
+				"A3E581CDF6C92A835AE7D5F8",
+				"C8AE4094B391EA41159A4748",
+				"5674D83B8709669A164A9A36",
+				"DD522A96D7AE2F660A7B6D1E",
+				"0B76B837AFDE4DAFB5D64C43",
+				"BCEE8840A70BC37925810519",
+				"CDAED3D943D5228E3700892E",
+				"B6C0010E75C2EBE62B849CFC",
+				"510A908978ED6C381A157B0E",
+				"B45A023EEF8B929433AC0FED",
+				"16E960EFEC03D284B39FFB9E",
+				"978437D84C5A172BB7B72179",
+				"8DB2C139B278BFED53381F49",
+			);
+			"name" = "OraloMac";
+			"sourceTree" = "<group>";
+		};
+		"B4F9152B2BA4EAD87ADD1E90" = {
+			"isa" = "PBXFileReference";
+			"explicitFileType" = "wrapper.application";
+			"includeInIndex" = "0";
+			"path" = "Oralo.app";
+			"sourceTree" = "BUILT_PRODUCTS_DIR";
+		};
+		"B150E3EAD7E7DA2BEF528EC7" = {
+			"isa" = "XCSwiftPackageProductDependency";
+			"package" = "085827B649F7606E862BCEEB";
+			"productName" = "OraloCore";
+		};
+		"4868AAEA0A835E6574B4C746" = {
+			"isa" = "PBXBuildFile";
+			"productRef" = "B150E3EAD7E7DA2BEF528EC7";
+		};
+		"575BAF08D6161017897D5C98" = {
+			"isa" = "PBXSourcesBuildPhase";
+			"buildActionMask" = "2147483647";
+			"files" = (
+				"BA214A46BFDBFBEB8C1D341D",
+				"2C233AEE9805CB021AAD005E",
+				"1AF40E751E1EDA90222285F6",
+				"DE0B891A548085F9ED19A92C",
+				"41766FBE38EFAAA9855F920E",
+				"51742071BEF244B984E49C19",
+				"75BB4A4EE52A5A2DE2E141D4",
+				"BC94A83596C852EA2F0C64B8",
+				"3EBE21A726F924681E753BEA",
+				"3590167B688C7F42D3FFC064",
+				"28F594FB5036892D68EDE920",
+				"A5DEC3E9BC4A893CDE9BCB29",
+				"048A2AFF976122AF449708AB",
+				"0B926E014BEC238B1E2AF324",
+				"A8CCD4879C13D813A19A4B0F",
+				"84E57626ADD1F84E96C0B77E",
+				"6B4B7AB259E28F7C633FC927",
+				"3F3F45E09254961D742FD7F4",
+				"FEC4A5047CFA88F2F31E3445",
+				"2CABF3D5C9B7273371C9377E",
+				"B2C93D577F3F708084447A0D",
+				"5AC8D10AAA9C643E683377B5",
+				"1AC8C90AEE1E97699CF9EFC2",
+				"B405400AE73F7EDCD9359E36",
+				"7A92DA844981A1C866992BF5",
+				"2A1E359A4BFFC49B3F108274",
+				"572AF503FDB56BEA22DFBDD1",
+				"D27CD87132BDB554A8716B54",
+				"BBB0B3A6E3E31C92E592964E",
+				"C24ABBC6D904EBF9DFAF0246",
+				"48E8F3D49374162FAF348C7F",
+				"6B8AD47C77AFBE3AD3A39007",
+				"A566B784E4F17F98A1161F72",
+				"1D154F0CE7A91DDC283A13F0",
+			);
+			"runOnlyForDeploymentPostprocessing" = "0";
+		};
+		"914BCDFFC8BF50F5E2956A84" = {
+			"isa" = "PBXFrameworksBuildPhase";
+			"buildActionMask" = "2147483647";
+			"files" = (
+				"4868AAEA0A835E6574B4C746",
+			);
+			"runOnlyForDeploymentPostprocessing" = "0";
+		};
+		"3AA601BD483CC2CF1AE08E22" = {
+			"isa" = "PBXResourcesBuildPhase";
+			"buildActionMask" = "2147483647";
+			"files" = (
+				"104EF65796AD0F50C4039CB5",
+				"3A8D7E22A3DE0E23B0D6A3FC",
+				"9697BB2312F0AD4E0E6EA624",
+				"004FD50D24D1D161BF3311FD",
+				"3F6B6035B9D99FF2A06EC87E",
+				"A65B7999161DE379B0E74F8C",
+				"DD1F0D029D0F16271A9F5636",
+				"80579A11CD685F59CD9441E1",
+				"D14D194F94062D60AC6CE2F3",
+				"3E230E0AE4E1B9815212CED1",
+			);
+			"runOnlyForDeploymentPostprocessing" = "0";
+		};
+		"C33FE95B72B8AAAA99A78204" = {
+			"isa" = "XCBuildConfiguration";
+			"buildSettings" = {
+				"SDKROOT" = "macosx";
+				"MACOSX_DEPLOYMENT_TARGET" = "15.0";
+				"SWIFT_VERSION" = "6.0";
+				"SWIFT_APPROACHABLE_CONCURRENCY" = "YES";
+				"SWIFT_DEFAULT_ACTOR_ISOLATION" = "MainActor";
+				"CLANG_ENABLE_MODULES" = "YES";
+				"CODE_SIGN_STYLE" = "Automatic";
+				"CODE_SIGN_IDENTITY" = "-";
+				"GENERATE_INFOPLIST_FILE" = "YES";
+				"ENABLE_USER_SCRIPT_SANDBOXING" = "YES";
+				"SWIFT_EMIT_LOC_STRINGS" = "YES";
+				"PRODUCT_NAME" = "Oralo";
+				"PRODUCT_BUNDLE_IDENTIFIER" = "com.ch563.oralo.mac.dev";
+				"LD_RUNPATH_SEARCH_PATHS" = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				"PRODUCT_MODULE_NAME" = "OraloMac";
+				"INFOPLIST_FILE" = "Configurations/Info.plist";
+				"CODE_SIGN_ENTITLEMENTS" = "Configurations/OraloMac.entitlements";
+				"ENABLE_APP_SANDBOX" = "YES";
+				"ENABLE_HARDENED_RUNTIME" = "YES";
+				"MARKETING_VERSION" = "0.1.0";
+				"CURRENT_PROJECT_VERSION" = "12";
+				"INFOPLIST_KEY_CFBundleIconFile" = "Oralo.icns";
+				"SWIFT_OPTIMIZATION_LEVEL" = "-Onone";
+				"SWIFT_ACTIVE_COMPILATION_CONDITIONS" = "DEBUG";
+				"ENABLE_TESTABILITY" = "YES";
+				"ONLY_ACTIVE_ARCH" = "YES";
+				"DEBUG_INFORMATION_FORMAT" = "dwarf";
+				"DEPLOYMENT_POSTPROCESSING" = "NO";
+				"STRIP_INSTALLED_PRODUCT" = "NO";
+				"COPY_PHASE_STRIP" = "NO";
+			};
+			"name" = "Debug";
+		};
+		"FC371638734969ABE4245A85" = {
+			"isa" = "XCBuildConfiguration";
+			"buildSettings" = {
+				"SDKROOT" = "macosx";
+				"MACOSX_DEPLOYMENT_TARGET" = "15.0";
+				"SWIFT_VERSION" = "6.0";
+				"SWIFT_APPROACHABLE_CONCURRENCY" = "YES";
+				"SWIFT_DEFAULT_ACTOR_ISOLATION" = "MainActor";
+				"CLANG_ENABLE_MODULES" = "YES";
+				"CODE_SIGN_STYLE" = "Automatic";
+				"CODE_SIGN_IDENTITY" = "-";
+				"GENERATE_INFOPLIST_FILE" = "YES";
+				"ENABLE_USER_SCRIPT_SANDBOXING" = "YES";
+				"SWIFT_EMIT_LOC_STRINGS" = "YES";
+				"PRODUCT_NAME" = "Oralo";
+				"PRODUCT_BUNDLE_IDENTIFIER" = "com.ch563.oralo.mac.dev";
+				"LD_RUNPATH_SEARCH_PATHS" = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				"PRODUCT_MODULE_NAME" = "OraloMac";
+				"INFOPLIST_FILE" = "Configurations/Info.plist";
+				"CODE_SIGN_ENTITLEMENTS" = "Configurations/OraloMac.entitlements";
+				"ENABLE_APP_SANDBOX" = "YES";
+				"ENABLE_HARDENED_RUNTIME" = "YES";
+				"MARKETING_VERSION" = "0.1.0";
+				"CURRENT_PROJECT_VERSION" = "12";
+				"INFOPLIST_KEY_CFBundleIconFile" = "Oralo.icns";
+				"SWIFT_OPTIMIZATION_LEVEL" = "-O";
+				"SWIFT_ACTIVE_COMPILATION_CONDITIONS" = "";
+				"ENABLE_TESTABILITY" = "NO";
+				"ONLY_ACTIVE_ARCH" = "NO";
+				"DEBUG_INFORMATION_FORMAT" = "dwarf-with-dsym";
+				"DEPLOYMENT_POSTPROCESSING" = "YES";
+				"STRIP_INSTALLED_PRODUCT" = "YES";
+				"COPY_PHASE_STRIP" = "YES";
+			};
+			"name" = "Release";
+		};
+		"7057A113E76F8763E1DB136C" = {
+			"isa" = "XCConfigurationList";
+			"buildConfigurations" = (
+				"C33FE95B72B8AAAA99A78204",
+				"FC371638734969ABE4245A85",
+			);
+			"defaultConfigurationIsVisible" = "0";
+			"defaultConfigurationName" = "Release";
+		};
+		"0023A528B31FE2A602DB244C" = {
+			"isa" = "PBXNativeTarget";
+			"buildConfigurationList" = "7057A113E76F8763E1DB136C";
+			"buildPhases" = (
+				"575BAF08D6161017897D5C98",
+				"914BCDFFC8BF50F5E2956A84",
+				"3AA601BD483CC2CF1AE08E22",
+			);
+			"buildRules" = ();
+			"dependencies" = ();
+			"name" = "OraloMac";
+			"productName" = "OraloMac";
+			"productReference" = "B4F9152B2BA4EAD87ADD1E90";
+			"productType" = "com.apple.product-type.application";
+			"packageProductDependencies" = (
+				"B150E3EAD7E7DA2BEF528EC7",
+			);
+		};
+		"9D778EE9254E69E96758FD75" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "OraloMacTests/FloatingAppearanceTests.swift";
+			"sourceTree" = "<group>";
+		};
+		"1037D2C669739412E9F4D2DB" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "9D778EE9254E69E96758FD75";
+		};
+		"F38C712E79D97BB03068AC05" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "OraloMacTests/LiveCaptureTests.swift";
+			"sourceTree" = "<group>";
+		};
+		"910E3EF5EEE09717CFA7516D" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "F38C712E79D97BB03068AC05";
+		};
+		"F926F24E7A326F15689433E4" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "OraloMacTests/MacFlowTests.swift";
+			"sourceTree" = "<group>";
+		};
+		"52575E8576DEFB542D861CEE" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "F926F24E7A326F15689433E4";
+		};
+		"8F05A8A404AC204763AFE3F9" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "OraloMacTests/ManuscriptAlignmentTests.swift";
+			"sourceTree" = "<group>";
+		};
+		"6E39B4E7CE2D3966EDB81CE0" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "8F05A8A404AC204763AFE3F9";
+		};
+		"8DF914AABA73532F8B6A04A7" = {
+			"isa" = "PBXGroup";
+			"children" = (
+				"9D778EE9254E69E96758FD75",
+				"F38C712E79D97BB03068AC05",
+				"F926F24E7A326F15689433E4",
+				"8F05A8A404AC204763AFE3F9",
+			);
+			"name" = "OraloMacTests";
+			"sourceTree" = "<group>";
+		};
+		"78F9D44BF594A204BC827022" = {
+			"isa" = "PBXFileReference";
+			"explicitFileType" = "wrapper.cfbundle";
+			"includeInIndex" = "0";
+			"path" = "OraloMacTests.xctest";
+			"sourceTree" = "BUILT_PRODUCTS_DIR";
+		};
+		"F0F31CB034F90EE476AC8350" = {
+			"isa" = "XCSwiftPackageProductDependency";
+			"package" = "085827B649F7606E862BCEEB";
+			"productName" = "OraloCore";
+		};
+		"26CA7C9A96CA398EF432ACBF" = {
+			"isa" = "PBXBuildFile";
+			"productRef" = "F0F31CB034F90EE476AC8350";
+		};
+		"C9D164E85E1137DBA12973BB" = {
+			"isa" = "PBXContainerItemProxy";
+			"containerPortal" = "244210E48437B6556980A702";
+			"proxyType" = "1";
+			"remoteGlobalIDString" = "0023A528B31FE2A602DB244C";
+			"remoteInfo" = "OraloMac";
+		};
+		"FAB6FB72A9C169EE6B48B624" = {
+			"isa" = "PBXTargetDependency";
+			"target" = "0023A528B31FE2A602DB244C";
+			"targetProxy" = "C9D164E85E1137DBA12973BB";
+		};
+		"90A944A604527F657F443F85" = {
+			"isa" = "PBXSourcesBuildPhase";
+			"buildActionMask" = "2147483647";
+			"files" = (
+				"1037D2C669739412E9F4D2DB",
+				"910E3EF5EEE09717CFA7516D",
+				"52575E8576DEFB542D861CEE",
+				"6E39B4E7CE2D3966EDB81CE0",
+			);
+			"runOnlyForDeploymentPostprocessing" = "0";
+		};
+		"C2CE2D667407A41111E5B398" = {
+			"isa" = "PBXFrameworksBuildPhase";
+			"buildActionMask" = "2147483647";
+			"files" = (
+				"26CA7C9A96CA398EF432ACBF",
+			);
+			"runOnlyForDeploymentPostprocessing" = "0";
+		};
+		"20C8C2165FF228C484FBCD77" = {
+			"isa" = "PBXResourcesBuildPhase";
+			"buildActionMask" = "2147483647";
+			"files" = ();
+			"runOnlyForDeploymentPostprocessing" = "0";
+		};
+		"1F252623F0AF13F6337053A9" = {
+			"isa" = "XCBuildConfiguration";
+			"buildSettings" = {
+				"SDKROOT" = "macosx";
+				"MACOSX_DEPLOYMENT_TARGET" = "15.0";
+				"SWIFT_VERSION" = "6.0";
+				"SWIFT_APPROACHABLE_CONCURRENCY" = "YES";
+				"SWIFT_DEFAULT_ACTOR_ISOLATION" = "MainActor";
+				"CLANG_ENABLE_MODULES" = "YES";
+				"CODE_SIGN_STYLE" = "Automatic";
+				"CODE_SIGN_IDENTITY" = "-";
+				"GENERATE_INFOPLIST_FILE" = "YES";
+				"ENABLE_USER_SCRIPT_SANDBOXING" = "YES";
+				"SWIFT_EMIT_LOC_STRINGS" = "YES";
+				"PRODUCT_NAME" = "$(TARGET_NAME)";
+				"PRODUCT_BUNDLE_IDENTIFIER" = "com.ch563.oralo.mac.dev.oralomactests";
+				"LD_RUNPATH_SEARCH_PATHS" = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				"TEST_HOST" = "$(BUILT_PRODUCTS_DIR)/Oralo.app/Contents/MacOS/Oralo";
+				"BUNDLE_LOADER" = "$(TEST_HOST)";
+				"SWIFT_OPTIMIZATION_LEVEL" = "-Onone";
+				"SWIFT_ACTIVE_COMPILATION_CONDITIONS" = "DEBUG";
+				"ENABLE_TESTABILITY" = "YES";
+				"ONLY_ACTIVE_ARCH" = "YES";
+				"DEBUG_INFORMATION_FORMAT" = "dwarf";
+				"DEPLOYMENT_POSTPROCESSING" = "NO";
+				"STRIP_INSTALLED_PRODUCT" = "NO";
+				"COPY_PHASE_STRIP" = "NO";
+			};
+			"name" = "Debug";
+		};
+		"51BF3F9D353E799F5387993B" = {
+			"isa" = "XCBuildConfiguration";
+			"buildSettings" = {
+				"SDKROOT" = "macosx";
+				"MACOSX_DEPLOYMENT_TARGET" = "15.0";
+				"SWIFT_VERSION" = "6.0";
+				"SWIFT_APPROACHABLE_CONCURRENCY" = "YES";
+				"SWIFT_DEFAULT_ACTOR_ISOLATION" = "MainActor";
+				"CLANG_ENABLE_MODULES" = "YES";
+				"CODE_SIGN_STYLE" = "Automatic";
+				"CODE_SIGN_IDENTITY" = "-";
+				"GENERATE_INFOPLIST_FILE" = "YES";
+				"ENABLE_USER_SCRIPT_SANDBOXING" = "YES";
+				"SWIFT_EMIT_LOC_STRINGS" = "YES";
+				"PRODUCT_NAME" = "$(TARGET_NAME)";
+				"PRODUCT_BUNDLE_IDENTIFIER" = "com.ch563.oralo.mac.dev.oralomactests";
+				"LD_RUNPATH_SEARCH_PATHS" = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				"TEST_HOST" = "$(BUILT_PRODUCTS_DIR)/Oralo.app/Contents/MacOS/Oralo";
+				"BUNDLE_LOADER" = "$(TEST_HOST)";
+				"SWIFT_OPTIMIZATION_LEVEL" = "-O";
+				"SWIFT_ACTIVE_COMPILATION_CONDITIONS" = "";
+				"ENABLE_TESTABILITY" = "NO";
+				"ONLY_ACTIVE_ARCH" = "NO";
+				"DEBUG_INFORMATION_FORMAT" = "dwarf-with-dsym";
+				"DEPLOYMENT_POSTPROCESSING" = "YES";
+				"STRIP_INSTALLED_PRODUCT" = "YES";
+				"COPY_PHASE_STRIP" = "YES";
+			};
+			"name" = "Release";
+		};
+		"85F34019FD6642718806570B" = {
+			"isa" = "XCConfigurationList";
+			"buildConfigurations" = (
+				"1F252623F0AF13F6337053A9",
+				"51BF3F9D353E799F5387993B",
+			);
+			"defaultConfigurationIsVisible" = "0";
+			"defaultConfigurationName" = "Release";
+		};
+		"183E1B9F156501CB7033E2DD" = {
+			"isa" = "PBXNativeTarget";
+			"buildConfigurationList" = "85F34019FD6642718806570B";
+			"buildPhases" = (
+				"90A944A604527F657F443F85",
+				"C2CE2D667407A41111E5B398",
+				"20C8C2165FF228C484FBCD77",
+			);
+			"buildRules" = ();
+			"dependencies" = (
+				"FAB6FB72A9C169EE6B48B624",
+			);
+			"name" = "OraloMacTests";
+			"productName" = "OraloMacTests";
+			"productReference" = "78F9D44BF594A204BC827022";
+			"productType" = "com.apple.product-type.bundle.unit-test";
+			"packageProductDependencies" = (
+				"F0F31CB034F90EE476AC8350",
+			);
+		};
+		"C302AA4819C713F3DED1FDA0" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "OraloMacUITests/LibraryLayoutUITests.swift";
+			"sourceTree" = "<group>";
+		};
+		"AE1C53610C9A62441EC30471" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "C302AA4819C713F3DED1FDA0";
+		};
+		"81E0667A29F6ED85A862BFB4" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "OraloMacUITests/LiveAudioUITests.swift";
+			"sourceTree" = "<group>";
+		};
+		"4F3D6522E0C16B80986DA0C4" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "81E0667A29F6ED85A862BFB4";
+		};
+		"0684C9080DE1C38C7B8675A4" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "OraloMacUITests/MacUITests.swift";
+			"sourceTree" = "<group>";
+		};
+		"0F4D19B7E4A90A200C3CC774" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "0684C9080DE1C38C7B8675A4";
+		};
+		"570FF10EFABC4C17ED28726B" = {
+			"isa" = "PBXGroup";
+			"children" = (
+				"C302AA4819C713F3DED1FDA0",
+				"81E0667A29F6ED85A862BFB4",
+				"0684C9080DE1C38C7B8675A4",
+			);
+			"name" = "OraloMacUITests";
+			"sourceTree" = "<group>";
+		};
+		"37CD4D65B340CDE5BFEB5D3A" = {
+			"isa" = "PBXFileReference";
+			"explicitFileType" = "wrapper.cfbundle";
+			"includeInIndex" = "0";
+			"path" = "OraloMacUITests.xctest";
+			"sourceTree" = "BUILT_PRODUCTS_DIR";
+		};
+		"F7E26E28869F4E5B48A59B89" = {
+			"isa" = "PBXContainerItemProxy";
+			"containerPortal" = "244210E48437B6556980A702";
+			"proxyType" = "1";
+			"remoteGlobalIDString" = "0023A528B31FE2A602DB244C";
+			"remoteInfo" = "OraloMac";
+		};
+		"DB2CA060E4CC83EA13FE4FB3" = {
+			"isa" = "PBXTargetDependency";
+			"target" = "0023A528B31FE2A602DB244C";
+			"targetProxy" = "F7E26E28869F4E5B48A59B89";
+		};
+		"FCB973FC2EA20C219F5CB8EC" = {
+			"isa" = "PBXSourcesBuildPhase";
+			"buildActionMask" = "2147483647";
+			"files" = (
+				"AE1C53610C9A62441EC30471",
+				"4F3D6522E0C16B80986DA0C4",
+				"0F4D19B7E4A90A200C3CC774",
+			);
+			"runOnlyForDeploymentPostprocessing" = "0";
+		};
+		"789B654B462E83010974F880" = {
+			"isa" = "PBXFrameworksBuildPhase";
+			"buildActionMask" = "2147483647";
+			"files" = ();
+			"runOnlyForDeploymentPostprocessing" = "0";
+		};
+		"3ADF9BDE33132075C3F6EDF9" = {
+			"isa" = "PBXResourcesBuildPhase";
+			"buildActionMask" = "2147483647";
+			"files" = ();
+			"runOnlyForDeploymentPostprocessing" = "0";
+		};
+		"664697E425E1FF7A3E0A6098" = {
+			"isa" = "XCBuildConfiguration";
+			"buildSettings" = {
+				"SDKROOT" = "macosx";
+				"MACOSX_DEPLOYMENT_TARGET" = "15.0";
+				"SWIFT_VERSION" = "6.0";
+				"SWIFT_APPROACHABLE_CONCURRENCY" = "YES";
+				"SWIFT_DEFAULT_ACTOR_ISOLATION" = "MainActor";
+				"CLANG_ENABLE_MODULES" = "YES";
+				"CODE_SIGN_STYLE" = "Automatic";
+				"CODE_SIGN_IDENTITY" = "-";
+				"GENERATE_INFOPLIST_FILE" = "YES";
+				"ENABLE_USER_SCRIPT_SANDBOXING" = "YES";
+				"SWIFT_EMIT_LOC_STRINGS" = "YES";
+				"PRODUCT_NAME" = "$(TARGET_NAME)";
+				"PRODUCT_BUNDLE_IDENTIFIER" = "com.ch563.oralo.mac.dev.oralomacuitests";
+				"LD_RUNPATH_SEARCH_PATHS" = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				"TEST_TARGET_NAME" = "OraloMac";
+				"SWIFT_OPTIMIZATION_LEVEL" = "-Onone";
+				"SWIFT_ACTIVE_COMPILATION_CONDITIONS" = "DEBUG";
+				"ENABLE_TESTABILITY" = "YES";
+				"ONLY_ACTIVE_ARCH" = "YES";
+				"DEBUG_INFORMATION_FORMAT" = "dwarf";
+				"DEPLOYMENT_POSTPROCESSING" = "NO";
+				"STRIP_INSTALLED_PRODUCT" = "NO";
+				"COPY_PHASE_STRIP" = "NO";
+			};
+			"name" = "Debug";
+		};
+		"00AD65EA545589BEE0693433" = {
+			"isa" = "XCBuildConfiguration";
+			"buildSettings" = {
+				"SDKROOT" = "macosx";
+				"MACOSX_DEPLOYMENT_TARGET" = "15.0";
+				"SWIFT_VERSION" = "6.0";
+				"SWIFT_APPROACHABLE_CONCURRENCY" = "YES";
+				"SWIFT_DEFAULT_ACTOR_ISOLATION" = "MainActor";
+				"CLANG_ENABLE_MODULES" = "YES";
+				"CODE_SIGN_STYLE" = "Automatic";
+				"CODE_SIGN_IDENTITY" = "-";
+				"GENERATE_INFOPLIST_FILE" = "YES";
+				"ENABLE_USER_SCRIPT_SANDBOXING" = "YES";
+				"SWIFT_EMIT_LOC_STRINGS" = "YES";
+				"PRODUCT_NAME" = "$(TARGET_NAME)";
+				"PRODUCT_BUNDLE_IDENTIFIER" = "com.ch563.oralo.mac.dev.oralomacuitests";
+				"LD_RUNPATH_SEARCH_PATHS" = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				"TEST_TARGET_NAME" = "OraloMac";
+				"SWIFT_OPTIMIZATION_LEVEL" = "-O";
+				"SWIFT_ACTIVE_COMPILATION_CONDITIONS" = "";
+				"ENABLE_TESTABILITY" = "NO";
+				"ONLY_ACTIVE_ARCH" = "NO";
+				"DEBUG_INFORMATION_FORMAT" = "dwarf-with-dsym";
+				"DEPLOYMENT_POSTPROCESSING" = "YES";
+				"STRIP_INSTALLED_PRODUCT" = "YES";
+				"COPY_PHASE_STRIP" = "YES";
+			};
+			"name" = "Release";
+		};
+		"1673FC125C50E2A359551E30" = {
+			"isa" = "XCConfigurationList";
+			"buildConfigurations" = (
+				"664697E425E1FF7A3E0A6098",
+				"00AD65EA545589BEE0693433",
+			);
+			"defaultConfigurationIsVisible" = "0";
+			"defaultConfigurationName" = "Release";
+		};
+		"34D3B1431D76ACC9689FE26B" = {
+			"isa" = "PBXNativeTarget";
+			"buildConfigurationList" = "1673FC125C50E2A359551E30";
+			"buildPhases" = (
+				"FCB973FC2EA20C219F5CB8EC",
+				"789B654B462E83010974F880",
+				"3ADF9BDE33132075C3F6EDF9",
+			);
+			"buildRules" = ();
+			"dependencies" = (
+				"DB2CA060E4CC83EA13FE4FB3",
+			);
+			"name" = "OraloMacUITests";
+			"productName" = "OraloMacUITests";
+			"productReference" = "37CD4D65B340CDE5BFEB5D3A";
+			"productType" = "com.apple.product-type.bundle.ui-testing";
+			"packageProductDependencies" = ();
+		};
+		"0A3E27B8CA818264D75C8D81" = {
+			"isa" = "PBXGroup";
+			"children" = (
+				"B4F9152B2BA4EAD87ADD1E90",
+				"78F9D44BF594A204BC827022",
+				"37CD4D65B340CDE5BFEB5D3A",
+			);
+			"name" = "Products";
+			"sourceTree" = "<group>";
+		};
+		"0D6E4079E36703EBD37C0072" = {
+			"isa" = "PBXGroup";
+			"children" = (
+				"1FF79DF9FD9C3545AB9DA50D",
+				"8DF914AABA73532F8B6A04A7",
+				"570FF10EFABC4C17ED28726B",
+				"0A3E27B8CA818264D75C8D81",
+			);
+			"sourceTree" = "<group>";
+		};
+		"73EBF6644258C120893E685D" = {
+			"isa" = "XCBuildConfiguration";
+			"buildSettings" = {
+				"SDKROOT" = "macosx";
+				"MACOSX_DEPLOYMENT_TARGET" = "15.0";
+				"SWIFT_VERSION" = "6.0";
+				"SWIFT_APPROACHABLE_CONCURRENCY" = "YES";
+				"SWIFT_DEFAULT_ACTOR_ISOLATION" = "MainActor";
+				"CLANG_ENABLE_MODULES" = "YES";
+				"CODE_SIGN_STYLE" = "Automatic";
+				"CODE_SIGN_IDENTITY" = "-";
+				"GENERATE_INFOPLIST_FILE" = "YES";
+				"ENABLE_USER_SCRIPT_SANDBOXING" = "YES";
+				"SWIFT_EMIT_LOC_STRINGS" = "YES";
+				"PRODUCT_NAME" = "$(TARGET_NAME)";
+				"SWIFT_OPTIMIZATION_LEVEL" = "-Onone";
+				"SWIFT_ACTIVE_COMPILATION_CONDITIONS" = "DEBUG";
+				"ENABLE_TESTABILITY" = "YES";
+				"ONLY_ACTIVE_ARCH" = "YES";
+				"DEBUG_INFORMATION_FORMAT" = "dwarf";
+				"DEPLOYMENT_POSTPROCESSING" = "NO";
+				"STRIP_INSTALLED_PRODUCT" = "NO";
+				"COPY_PHASE_STRIP" = "NO";
+			};
+			"name" = "Debug";
+		};
+		"0B0C687DF8B6B8DC790B519C" = {
+			"isa" = "XCBuildConfiguration";
+			"buildSettings" = {
+				"SDKROOT" = "macosx";
+				"MACOSX_DEPLOYMENT_TARGET" = "15.0";
+				"SWIFT_VERSION" = "6.0";
+				"SWIFT_APPROACHABLE_CONCURRENCY" = "YES";
+				"SWIFT_DEFAULT_ACTOR_ISOLATION" = "MainActor";
+				"CLANG_ENABLE_MODULES" = "YES";
+				"CODE_SIGN_STYLE" = "Automatic";
+				"CODE_SIGN_IDENTITY" = "-";
+				"GENERATE_INFOPLIST_FILE" = "YES";
+				"ENABLE_USER_SCRIPT_SANDBOXING" = "YES";
+				"SWIFT_EMIT_LOC_STRINGS" = "YES";
+				"PRODUCT_NAME" = "$(TARGET_NAME)";
+				"SWIFT_OPTIMIZATION_LEVEL" = "-O";
+				"SWIFT_ACTIVE_COMPILATION_CONDITIONS" = "";
+				"ENABLE_TESTABILITY" = "NO";
+				"ONLY_ACTIVE_ARCH" = "NO";
+				"DEBUG_INFORMATION_FORMAT" = "dwarf-with-dsym";
+				"DEPLOYMENT_POSTPROCESSING" = "YES";
+				"STRIP_INSTALLED_PRODUCT" = "YES";
+				"COPY_PHASE_STRIP" = "YES";
+			};
+			"name" = "Release";
+		};
+		"F766491E72E39EE5D123B2AE" = {
+			"isa" = "XCConfigurationList";
+			"buildConfigurations" = (
+				"73EBF6644258C120893E685D",
+				"0B0C687DF8B6B8DC790B519C",
+			);
+			"defaultConfigurationIsVisible" = "0";
+			"defaultConfigurationName" = "Release";
+		};
+		"244210E48437B6556980A702" = {
+			"isa" = "PBXProject";
+			"attributes" = {
+				"LastUpgradeCheck" = "2710";
+				"BuildIndependentTargetsInParallel" = "1";
+			};
+			"buildConfigurationList" = "F766491E72E39EE5D123B2AE";
+			"compatibilityVersion" = "Xcode 14.0";
+			"developmentRegion" = "en";
+			"hasScannedForEncodings" = "0";
+			"knownRegions" = (
+				"en",
+				"zh-Hans",
+				"zh-Hant",
+				"Base",
+			);
+			"mainGroup" = "0D6E4079E36703EBD37C0072";
+			"productRefGroup" = "0A3E27B8CA818264D75C8D81";
+			"projectDirPath" = "";
+			"projectRoot" = "";
+			"targets" = (
+				"0023A528B31FE2A602DB244C",
+				"183E1B9F156501CB7033E2DD",
+				"34D3B1431D76ACC9689FE26B",
+			);
+			"packageReferences" = (
+				"085827B649F7606E862BCEEB",
+			);
+		};
+	};
+	"rootObject" = "244210E48437B6556980A702";
+}

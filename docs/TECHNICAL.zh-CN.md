@@ -2,7 +2,7 @@
 
 [English](TECHNICAL.md) · [简体中文](TECHNICAL.zh-CN.md) · [项目介绍](../README.zh-CN.md)
 
-本文对应 1.0 / build 14 的实现。Oralo 使用 Apple 设备端语音模型识别声音，再通过本地文本对齐定位讲稿，不把讲稿发给大语言模型或服务器判断滚动位置。
+本文的 iOS 部分对应 1.0 / build 14，macOS 部分对应预览版 0.1.0 (12)。Oralo 使用 Apple 设备端语音模型识别声音，再通过本地文本对齐定位讲稿，不把讲稿发给大语言模型或服务器判断滚动位置。
 
 ## 一套流程，两种阅读界面
 
@@ -108,3 +108,13 @@ build 14 已通过真机使用验收，覆盖系统相机录像、录像人声�
 | [LocalDataRemovalTests](../oralo-ios/Packages/OraloCore/Tests/OraloCoreTests/LocalDataRemovalTests.swift) | 主副本清理及中断后继续删除 |
 
 UI 测试使用独立稿库验证备稿、注音、复盘、布局和小窗流程，不能代替真机 ASR 时延、后台收音和其他 App 成片声音测试。真机报告应注明系统、语言、音频路由及配合使用的 App，用不含隐私的文本测试快慢语速、停顿、重复句、自由发挥、手动跳句及中断。
+
+## macOS 原生演讲页与悬浮窗
+
+Mac 工程直接引用同一份 `OraloCore`，没有分叉匹配算法或替换 iOS build 14 的接稿逻辑。[`MacSpeechSession`](../oralo-macos/OraloMac/Speech/MacSpeechSession.swift) 管理一套本地收音会话：macOS 26 及以上使用现代 `SpeechAnalyzer` 适配器，显式兼容模式要求 `SFSpeechRecognizer` 支持设备端识别。设备端能力不可用时保留阅读位置，不偷偷启用服务器识别。
+
+[`MacReader`](../oralo-macos/OraloMac/Reader/MacReader.swift) 使用现有的有界显示预测驱动演讲页与悬浮窗。改变悬浮窗大小或外观不会启动第二个识别器；备稿和阅读继续使用原文的注音锚点。
+
+[`PresentationWindows`](../oralo-macos/OraloMac/Windows/PresentationWindows.swift) 通过公开的 AppKit 非激活 `NSPanel` 实现悬浮与快捷设置；[`FloatingGeometry`](../oralo-macos/OraloMac/Windows/FloatingGeometry.swift) 负责靠近摄像头、四角定位和屏幕边界恢复。透明度只影响背景，正文保持清晰。阅读偏好及窗口位置由 [`MacPreferences`](../oralo-macos/OraloMac/App/MacPreferences.swift) 保存在本机。Mac 不使用 AVKit PiP，也不为了提词建立视频通话。
+
+非激活窗口有助于减少焦点切换，但不能保证所有会议或投屏配置都会排除提词窗。应共享具体的演示或浏览器窗口，并检查实际共享预览。当前 Mac 候选版完成了构建与安装包检查；运行时尚待确认的项目见[验证边界](../oralo-macos/VALIDATION.md)和[人工验收清单](../oralo-macos/MANUAL-ACCEPTANCE.md)。

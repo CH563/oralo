@@ -2,7 +2,7 @@
 
 [English](PRIVACY.md) · [简体中文](PRIVACY.zh-CN.md) · [Project](../README.md)
 
-This describes the iOS app in this repository. **Oralo does not upload scripts or microphone audio to a developer-operated server.** It saves your work locally so it can be reopened and reviewed. There is no account system, advertising SDK or analytics SDK in the app.
+The table below describes the iOS app; the macOS preview has its platform-specific notes below. **Oralo does not upload scripts or microphone audio to a developer-operated server.** It saves your work locally so it can be reopened and reviewed. There is no account system, advertising SDK or analytics SDK in the app.
 
 | Data | Handling |
 | --- | --- |
@@ -30,6 +30,14 @@ App data is not excluded from system device backups. Device backup settings and 
 - **Clear rehearsal history** preserves presentation records and the snapshots they reference.
 - **Delete all local data** clears app-managed scripts, pronunciation notes, records, snapshots, recovery copies and preferences.
 - None of these actions erases system device backups or copies already exported to another location.
+
+## macOS preview
+
+The native Mac app has no account, advertising SDK or analytics SDK. Scripts, readings, preferences and rehearsal/presentation records stay in its local app sandbox. Microphone audio and full recognition transcripts are processed transiently, not recorded to files. It uses the shared deletion-safe repositories; exported files and system backups remain outside app deletion.
+
+The floating prompt is an AppKit window, with no camera capture, screen capture or network video call. Meeting software can capture it when sharing the whole desktop. Oralo itself does not request camera, screen-recording or Accessibility access for prompting. On-device model downloads require the user's explicit action. The Settings support-information action copies version, OS, recognition mode and language, without script contents.
+
+Inspect the [Mac speech code](../oralo-macos/OraloMac/Speech/), [local library](../oralo-macos/OraloMac/Library/MacLibrary.swift), [rehearsal storage](../oralo-macos/OraloMac/Rehearsal/RehearsalStore.swift) and [privacy manifest](../oralo-macos/OraloMac/Resources/PrivacyInfo.xcprivacy).
 
 ## Inspect the implementation
 

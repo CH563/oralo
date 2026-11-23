@@ -1,0 +1,50 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "NSMicrophoneUsageDescription": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Oralo uses the microphone to follow your script on this Mac. Audio is not saved."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Oralo 使用麦克风在这台 Mac 上跟随讲稿，不保存录音。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Oralo 使用麥克風在這台 Mac 上跟隨講稿，不儲存錄音。"
+          }
+        }
+      }
+    },
+    "NSSpeechRecognitionUsageDescription": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Oralo uses on-device speech recognition to find your place in the script. Audio is not sent to a recognition server."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Oralo 使用设备端语音识别定位原稿，不将音频发送到识别服务器。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Oralo 使用裝置端語音辨識定位原稿，不將音訊傳送到辨識伺服器。"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

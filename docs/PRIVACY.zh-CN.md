@@ -2,7 +2,7 @@
 
 [English](PRIVACY.md) · [简体中文](PRIVACY.zh-CN.md) · [项目介绍](../README.zh-CN.md)
 
-本文描述本仓库中的 iOS App。**Oralo 不向开发者服务器上传讲稿或麦克风音频。** 为了重新打开和复盘，作品会保存在本机。App 不接入账号系统、广告 SDK 或统计 SDK。
+下表描述 iOS App，macOS 预览版的平台差异见下方说明。**Oralo 不向开发者服务器上传讲稿或麦克风音频。** 为了重新打开和复盘，作品会保存在本机。App 不接入账号系统、广告 SDK 或统计 SDK。
 
 | 数据 | 处理方式 |
 | --- | --- |
@@ -30,6 +30,14 @@
 - **清空排练记录**会保留正式演讲记录及其引用的快照。
 - **删除全部本机数据**会清理 App 管理的讲稿、注音、记录、快照、恢复副本和偏好。
 - 上述操作不会删除系统设备备份，或已经导出到其他位置的副本。
+
+## macOS 预览版
+
+原生 Mac 版同样没有账号、广告 SDK 或统计 SDK。讲稿、注音、偏好及排练／演讲记录保存在应用本机沙盒中；音频和识别全文只短暂处理，不写成录音或全文文件。Mac 复用防止旧副本恢复的删除逻辑；已经导出的文件和系统备份仍不属于 App 删除范围。
+
+悬浮提词使用 AppKit 窗口，不采集相机或屏幕，也不建立网络视频通话。共享整个桌面时，会议软件可能把它一并采集。Oralo 提词本身不申请相机、屏幕录制或辅助功能权限；下载设备端模型由用户明确触发。设置中的支持信息复制只包含版本、系统、识别模式及语言，不包含稿件内容。
+
+可检查 [Mac 语音代码](../oralo-macos/OraloMac/Speech/)、[本机稿库](../oralo-macos/OraloMac/Library/MacLibrary.swift)、[排练记录存储](../oralo-macos/OraloMac/Rehearsal/RehearsalStore.swift)与[隐私清单](../oralo-macos/OraloMac/Resources/PrivacyInfo.xcprivacy)。
 
 ## 可以检查的源码
 
